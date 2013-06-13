@@ -112,6 +112,17 @@ public class Graph {
         return (int[][]) res.toArray();
     }
 
+    public void removeReference(int from, int to) {
+        int i;
+        List<Integer> using = vertex[from].getUsing();
+        for (i = 0; i < using.size(); i++) {
+            if (using.get(i) == to)
+                break;
+        }
+        vertex[from].getUsing().remove(i);
+        //TODO: remove usedBy reference from to
+    }
+
     public void findLabels() {
         List<Point> vert = new ArrayList<Point>();
 
