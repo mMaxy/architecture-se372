@@ -229,6 +229,117 @@ public class Graph {
         return res;
     }
 
+    public List<Integer> findAllLoops() {
+        List<Integer> result = new ArrayList<Integer>();
+        Map<Point, Integer> markMap = new HashMap<Point, Integer>();
+        for (Point p : vertex) {
+            markMap.put(p, 0);
+        }
+
+        markMap = depthFirstSearch(vertex[0], markMap);
+        for (Point p : markMap.keySet()) {
+            if (markMap.get(p) == 1)
+                result.add(indexOfPoint(p));
+        }
+        return result;
+    }
+
+    private int indexOfPoint(Point point) {
+        for (int i = 0; i < vertex.length; i++) {
+            if (vertex[i] == point) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private Map<Point, Integer> depthFirstSearch(Point currentPoint, Map<Point, Integer> markMap) {
+        List<Integer> neighbourIndexes = currentPoint.getUsing();
+        List<Point> neighbours = new ArrayList<Point>();
+        for (Integer i : neighbourIndexes) {
+            neighbours.add(vertex[i]);
+        }
+        if (neighbours.isEmpty()) {
+            markMap.put(currentPoint, 2);
+            return markMap;
+        }
+        boolean containsGray = false;
+        boolean containsBlack = false;
+        List<Point> notMarked = new ArrayList<Point>();
+        for (Point neighbour : neighbours) {
+            if (!markMap.containsKey(neighbour)) {
+                continue;
+            }
+            switch (markMap.get(neighbour)) {
+                case 0:
+                    notMarked.add(neighbour);
+                    break;
+                case 1:
+                    containsGray = true;
+                    break;
+                case 2:
+                    containsBlack = true;
+                    break;
+                default: break;
+            }
+            if (notMarked.isEmpty()) {
+                if (containsGray) {
+                    markMap.put(currentPoint, 1);
+                    return markMap;
+                }
+                if (containsBlack) {
+                    markMap.put(currentPoint, 2);
+                    return markMap;
+                }
+            }
+            for (Point p : notMarked) {
+                markMap = depthFirstSearch(p, markMap);
+            }
+            switch (analyzeNeighbours(neighbours, markMap)) {
+                case 1:
+                    markMap.put(currentPoint, 1);
+                    break;
+                case 2:
+                    markMap.put(currentPoint, 2);
+                    break;
+                case 0:
+                    default:
+                        break;
+            }
+        }
+        return markMap;
+    }
+
+    private int analyzeNeighbours(List<Point> neighbours, Map<Point, Integer> markMap) {
+        boolean containsGray = false;
+        boolean containsBlack = false;
+        boolean containsEmpty = false;
+        for (Point neighbour : neighbours) {
+            if (!markMap.containsKey(neighbour)) {
+                continue;
+            }
+            switch (markMap.get(neighbour)) {
+                case 0:
+                    containsEmpty = true;
+                    break;
+                case 1:
+                    containsGray = true;
+                    break;
+                case 2:
+                    containsBlack = true;
+                    break;
+                default: break;
+            }
+        }
+        if (containsEmpty)
+            return 0;
+        if (containsGray)
+            return 1;
+        if (containsBlack)
+            return 2;
+        return -1;
+    }
+
     private class Point {
 
         private int accessModifier;
