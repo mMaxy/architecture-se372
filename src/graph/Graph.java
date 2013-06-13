@@ -22,16 +22,31 @@ public class Graph {
         dict.put(2, "private");
     }
 
+    /**
+     * Конструктор
+     * @param size размер графа
+     * @throws IllegalArgumentException
+     */
     public Graph(int size) throws IllegalArgumentException {
         if (size <= 0) throw new IllegalArgumentException("Количество вершин в графе должно быть строго больше 0");
         vertex = new Point[size];
     }
 
+    /**
+     * Новый размер графа
+     * @param newSize новый размер
+     * @throws IllegalArgumentException
+     */
     public void setGraphSize(int newSize) throws IllegalArgumentException {
         if (newSize <= 0) throw new IllegalArgumentException("Количество вершин в графе должно быть строго больше 0");
         vertex = new Point[newSize];
     }
 
+    /**
+     * Строим граф из матрицы
+     * @param adjacencyMatrix собственно, матрица(КВАДРАТНАЯ)
+     * @throws IllegalArgumentException
+     */
     public void setGraphFromMatrix(int[][] adjacencyMatrix) throws IllegalArgumentException {
         if (adjacencyMatrix == null) throw new IllegalArgumentException();
         if (adjacencyMatrix.length != adjacencyMatrix[0].length)
@@ -51,6 +66,11 @@ public class Graph {
         }
     }
 
+    /**
+     * Строим граф из листа
+     * @param list лист, из которого строить граф
+     * @throws IllegalArgumentException
+     */
     public void setGraphFromList(int[][] list) throws IllegalArgumentException {
         if (list == null) throw new IllegalArgumentException();
         if (list[0].length != 3)
@@ -63,6 +83,12 @@ public class Graph {
         }
     }
 
+    /**
+     * Читаем из файла
+     * @param fr FileReader, из которого читать
+     * @return массив прочитанного(может быть как квадратным, так и 2*n)
+     * @throws Exception
+     */
     public int[][] readFromFile(FileReader fr) throws Exception {
         List<int[]> res = new ArrayList<int[]>();
         BufferedReader br = new BufferedReader(fr);
@@ -112,6 +138,11 @@ public class Graph {
         return (int[][]) res.toArray();
     }
 
+    /**
+     * Удаляет связь от вершины к вершине
+     * @param from от какой вершины
+     * @param to до какой вершины
+     */
     public void removeReference(int from, int to) {
         int i;
         List<Integer> using = vertex[from].getUsing();
@@ -120,9 +151,18 @@ public class Graph {
                 break;
         }
         vertex[from].getUsing().remove(i);
-        //TODO: remove usedBy reference from to
+
+        List<Integer> usedBy = vertex[to].getUsedBy();
+        for (i = 0; i < usedBy.size(); i++) {
+            if (usedBy.get(i) == from)
+                break;
+        }
+        vertex[to].getUsedBy().remove(i);
     }
 
+    /**
+     * Находит все лэйблы
+     */
     public void findLabels() {
         List<Point> vert = new ArrayList<Point>();
 
@@ -133,13 +173,18 @@ public class Graph {
         while (searchNextLabel(i)) i++;
     }
 
+    /**
+     * Поиск следующего лэйбла. Убирает вершины, лэйбл которых определен, из оставшихся строит новый граф и находит лэйбл
+     * @param currentLabel сколько уже лэйблов проставили
+     * @return истина, если были вершины для распределения. Ложь, если не было.
+     */
     private boolean searchNextLabel(int currentLabel) {
         List<Point> graph = new ArrayList<Point>();
         Map<Integer, Integer> mapGraphToVer = new HashMap<Integer, Integer>();
         Map<Integer, Integer> mapVerToGraph = new HashMap<Integer, Integer>();
 
         for (int i = 0; i < vertex.length; i++) {
-            if (vertex[i].getLabel() == 0) {
+            if (vertex[i].getLabel() == 0 && vertex[i].getAccessModifier() == 1) {
                 graph.add(new Point());
                 mapGraphToVer.put(graph.size(), i);
                 mapVerToGraph.put(i, graph.size());
@@ -171,6 +216,10 @@ public class Graph {
         return true;
     }
 
+    /**
+     * Ищет нижний слой
+     * @param graph граф, в котором ищет
+     */
     private void findL(List<Point> graph) {
         for (Point aVertex : graph) {
             if (aVertex.getSizeOfUsing() == 0 && aVertex.getAccessModifier() != 2) {
@@ -187,6 +236,11 @@ public class Graph {
         }
     }
 
+    /**
+     * Ищет модли, использующие друг-друга на этом уровне.
+     * @param graph граф, в котором ищет
+     * @return список вершин
+     */
     private int[] findCrossHandledModules(List<Point> graph) {
         List<Integer> res = new ArrayList<Integer>();
         List<Integer> alreadyChecked = new ArrayList<Integer>();
@@ -211,6 +265,13 @@ public class Graph {
         return resArray;
     }
 
+    /**
+     * Проверка на кросс связность
+     * @param graph граф, в котором проверять
+     * @param alreadyChecked проверяли ли уже
+     * @param v вершина, в которой стоим
+     * @return все ли хорошо
+     */
     private boolean check(List<Point> graph, List<Integer> alreadyChecked, int v) {
         boolean res = true;
         List<Integer> using = graph.get(v).getUsing();
@@ -351,6 +412,9 @@ public class Graph {
         return -1;
     }
 
+    /**
+     * Класс модуля
+     */
     private class Point {
 
         private int accessModifier;
