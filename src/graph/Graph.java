@@ -11,7 +11,7 @@ import java.util.*;
  */
 public class Graph {
 
-    Point[] vertex;
+    Node[] vertex;
     private Map<Integer, String> dict;
 
     {
@@ -27,7 +27,7 @@ public class Graph {
      */
     public Graph(int size) throws IllegalArgumentException {
         if (size <= 0) throw new IllegalArgumentException("Количество вершин в графе должно быть строго больше 0");
-        vertex = new Point[size];
+        vertex = new Node[size];
     }
 
     /**
@@ -37,7 +37,7 @@ public class Graph {
      */
     public void setGraphSize(int newSize) throws IllegalArgumentException {
         if (newSize <= 0) throw new IllegalArgumentException("Количество вершин в графе должно быть строго больше 0");
-        vertex = new Point[newSize];
+        vertex = new Node[newSize];
     }
 
     /**
@@ -160,7 +160,7 @@ public class Graph {
      * Вернуть массив вершин
      * @return массив вершин
      */
-    public Point[] getVertexes() {
+    public Node[] getVertexes() {
         return vertex;
     }
 
@@ -168,7 +168,7 @@ public class Graph {
      * Вернуть массив вершин
      * @return массив вершин
      */
-    public void setVertexes(Point[] newVertex) {
+    public void setVertexes(Node[] newVertex) {
         this.vertex = newVertex;
     }
 
@@ -198,7 +198,7 @@ public class Graph {
      * Находит все лэйблы
      */
     public void findLabels() {
-        List<Point> vert = new ArrayList<Point>();
+        List<Node> vert = new ArrayList<Node>();
 
         Collections.addAll(vert, vertex);
 
@@ -213,13 +213,13 @@ public class Graph {
      * @return истина, если были вершины для распределения. Ложь, если не было.
      */
     private boolean searchNextLabel(int currentLabel) {
-        List<Point> graph = new ArrayList<Point>();
+        List<Node> graph = new ArrayList<Node>();
         Map<Integer, Integer> mapGraphToVer = new HashMap<Integer, Integer>();
         Map<Integer, Integer> mapVerToGraph = new HashMap<Integer, Integer>();
 
         for (int i = 0; i < vertex.length; i++) {
             if (vertex[i].getLabel() == 0 && vertex[i].getAccessModifier() == 1) {
-                graph.add(new Point());
+                graph.add(new Node());
                 mapGraphToVer.put(graph.size(), i);
                 mapVerToGraph.put(i, graph.size());
             }
@@ -254,8 +254,8 @@ public class Graph {
      * Ищет нижний слой
      * @param graph граф, в котором ищет
      */
-    private void findL(List<Point> graph) {
-        for (Point aVertex : graph) {
+    private void findL(List<Node> graph) {
+        for (Node aVertex : graph) {
             if (aVertex.getSizeOfUsing() == 0 && aVertex.getAccessModifier() != 2) {
                 aVertex.setLabel(1);
             }
@@ -275,7 +275,7 @@ public class Graph {
      * @param graph граф, в котором ищет
      * @return список вершин
      */
-    private int[] findCrossHandledModules(List<Point> graph) {
+    private int[] findCrossHandledModules(List<Node> graph) {
         List<Integer> res = new ArrayList<Integer>();
         List<Integer> alreadyChecked = new ArrayList<Integer>();
         for (int i = 0; i < graph.size(); i++) {
@@ -306,7 +306,7 @@ public class Graph {
      * @param v вершина, в которой стоим
      * @return все ли хорошо
      */
-    private boolean check(List<Point> graph, List<Integer> alreadyChecked, int v) {
+    private boolean check(List<Node> graph, List<Integer> alreadyChecked, int v) {
         boolean res = true;
         List<Integer> using = graph.get(v).getUsing();
         if (alreadyChecked.contains(v)) {
@@ -329,15 +329,15 @@ public class Graph {
      * @param graph граф, в котором надо искать
      * @return массив индексов таких точек
      */
-    private List<Integer> findFreeLoop(List<Point> graph) {
+    private List<Integer> findFreeLoop(List<Node> graph) {
         List<Integer> res = new ArrayList<Integer>();
         //TODO здесь нужно искать свободный цикл, то есть такой, который использует либо себя, либо еще модули с нижнего уровня
         List<Integer> allLoops = findAllLoops();
-        for (Point point : graph) {
+        for (Node node : graph) {
             boolean innerUsedBy = true;
             boolean innerUsing = true;
-            List<Integer> usedByIndexes = point.getUsedBy();
-            List<Integer> usingIndexes = point.getUsing();
+            List<Integer> usedByIndexes = node.getUsedBy();
+            List<Integer> usingIndexes = node.getUsing();
             for (Integer i : usedByIndexes) {
                 if (!(graph.contains(vertex[i]) && allLoops.contains(i))) {
                     innerUsedBy = false;
@@ -349,7 +349,7 @@ public class Graph {
                 }
             }
             if (innerUsedBy && innerUsing) {
-                res.add(indexOfPoint(point));
+                res.add(indexOfPoint(node));
             }
         }
         return res;
@@ -357,42 +357,42 @@ public class Graph {
 
     public List<Integer> findAllLoops() {
         List<Integer> result = new ArrayList<Integer>();
-        Map<Point, Integer> markMap = new HashMap<Point, Integer>();
-        for (Point p : vertex) {
+        Map<Node, Integer> markMap = new HashMap<Node, Integer>();
+        for (Node p : vertex) {
             markMap.put(p, 0);
         }
 
         markMap = depthFirstSearch(vertex[0], markMap);
-        for (Point p : markMap.keySet()) {
+        for (Node p : markMap.keySet()) {
             if (markMap.get(p) == 1)
                 result.add(indexOfPoint(p));
         }
         return result;
     }
 
-    private int indexOfPoint(Point point) {
+    private int indexOfPoint(Node node) {
         for (int i = 0; i < vertex.length; i++) {
-            if (vertex[i] == point) {
+            if (vertex[i] == node) {
                 return i;
             }
         }
         return -1;
     }
 
-    private Map<Point, Integer> depthFirstSearch(Point currentPoint, Map<Point, Integer> markMap) {
-        List<Integer> neighbourIndexes = currentPoint.getUsing();
-        List<Point> neighbours = new ArrayList<Point>();
+    private Map<Node, Integer> depthFirstSearch(Node currentNode, Map<Node, Integer> markMap) {
+        List<Integer> neighbourIndexes = currentNode.getUsing();
+        List<Node> neighbours = new ArrayList<Node>();
         for (Integer i : neighbourIndexes) {
             neighbours.add(vertex[i]);
         }
         if (neighbours.isEmpty()) {
-            markMap.put(currentPoint, 2);
+            markMap.put(currentNode, 2);
             return markMap;
         }
         boolean containsGray = false;
         boolean containsBlack = false;
-        List<Point> notMarked = new ArrayList<Point>();
-        for (Point neighbour : neighbours) {
+        List<Node> notMarked = new ArrayList<Node>();
+        for (Node neighbour : neighbours) {
             if (!markMap.containsKey(neighbour)) {
                 continue;
             }
@@ -410,23 +410,23 @@ public class Graph {
             }
             if (notMarked.isEmpty()) {
                 if (containsGray) {
-                    markMap.put(currentPoint, 1);
+                    markMap.put(currentNode, 1);
                     return markMap;
                 }
                 if (containsBlack) {
-                    markMap.put(currentPoint, 2);
+                    markMap.put(currentNode, 2);
                     return markMap;
                 }
             }
-            for (Point p : notMarked) {
+            for (Node p : notMarked) {
                 markMap = depthFirstSearch(p, markMap);
             }
             switch (analyzeNeighbours(neighbours, markMap)) {
                 case 1:
-                    markMap.put(currentPoint, 1);
+                    markMap.put(currentNode, 1);
                     break;
                 case 2:
-                    markMap.put(currentPoint, 2);
+                    markMap.put(currentNode, 2);
                     break;
                 case 0:
                     default:
@@ -436,11 +436,11 @@ public class Graph {
         return markMap;
     }
 
-    private int analyzeNeighbours(List<Point> neighbours, Map<Point, Integer> markMap) {
+    private int analyzeNeighbours(List<Node> neighbours, Map<Node, Integer> markMap) {
         boolean containsGray = false;
         boolean containsBlack = false;
         boolean containsEmpty = false;
-        for (Point neighbour : neighbours) {
+        for (Node neighbour : neighbours) {
             if (!markMap.containsKey(neighbour)) {
                 continue;
             }
@@ -469,7 +469,7 @@ public class Graph {
     /**
      * Класс модуля
      */
-    private class Point {
+    private class Node {
 
         private int accessModifier;
         private int label;
