@@ -332,6 +332,26 @@ public class Graph {
     private List<Integer> findFreeLoop(List<Point> graph) {
         List<Integer> res = new ArrayList<Integer>();
         //TODO здесь нужно искать свободный цикл, то есть такой, который использует либо себя, либо еще модули с нижнего уровня
+        List<Integer> allLoops = findAllLoops();
+        for (Point point : graph) {
+            boolean innerUsedBy = true;
+            boolean innerUsing = true;
+            List<Integer> usedByIndexes = point.getUsedBy();
+            List<Integer> usingIndexes = point.getUsing();
+            for (Integer i : usedByIndexes) {
+                if (!(graph.contains(vertex[i]) && allLoops.contains(i))) {
+                    innerUsedBy = false;
+                }
+            }
+            for (Integer i : usingIndexes) {
+                if (!(graph.contains(vertex[i]) && allLoops.contains(i))) {
+                    innerUsing = false;
+                }
+            }
+            if (innerUsedBy && innerUsing) {
+                res.add(indexOfPoint(point));
+            }
+        }
         return res;
     }
 
