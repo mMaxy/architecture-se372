@@ -139,6 +139,42 @@ public class Graph {
     }
 
     /**
+     * Строит матрицу смежности
+     * @return матрицу смежности
+     */
+    public int[][] buildAdjacencyMatrix() {
+        int[][] res = new int[vertex.length][];
+        for (int i = 0; i < vertex.length; i ++) {
+            res[i] = new int[vertex.length];
+        }
+
+        for (int i = 0; i < vertex.length; i++) {
+            List<Integer> connections = vertex[i].getUsing();
+            for (Integer connection : connections) {
+                res[i][connection] = vertex[connection].getAccessModifier();
+            }
+        }
+
+        return res;
+    }
+
+    /**
+     * Вернуть массив вершин
+     * @return массив вершин
+     */
+    public Point[] getVertexes() {
+        return vertex;
+    }
+
+    /**
+     * Вернуть массив вершин
+     * @return массив вершин
+     */
+    public void setVertexes(Point[] newVertex) {
+        this.vertex = newVertex;
+    }
+
+    /**
      * Удаляет связь от вершины к вершине
      * @param from от какой вершины
      * @param to до какой вершины
