@@ -11,6 +11,23 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 
 public class Arc extends Arc2D {
+    /**
+     * This is an abstract class that cannot be instantiated directly.
+     * Type-specific implementation subclasses are available for
+     * instantiation and provide a number of formats for storing
+     * the information necessary to satisfy the various accessor
+     * methods below.
+     *
+     * @param type The closure type of this arc:
+     *             {@link #OPEN}, {@link #CHORD}, or {@link #PIE}.
+     * @see java.awt.geom.Arc2D.Float
+     * @see java.awt.geom.Arc2D.Double
+     * @since 1.2
+     */
+    protected Arc(int type) {
+        super(type);
+    }
+
     @Override
     public double getAngleStart() {
         return 0;  //To change body of implemented methods use File | Settings | File Templates.

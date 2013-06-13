@@ -466,10 +466,23 @@ public class Graph {
         return -1;
     }
 
+    public List<Connection>  findAllConflictBindings() {
+        List<Connection> result = new ArrayList<Connection>();
+        for (Node node : vertex) {
+            List<Integer> usingIndexes = node.getUsing();
+            for (Integer i : usingIndexes) {
+                if (vertex[i].getLabel() > node.label) {
+                    result.add(new Connection(node, vertex[i]));
+                }
+            }
+        }
+        return result;
+    }
+
     /**
      * Класс модуля
      */
-    private class Node {
+    public class Node {
 
         private int accessModifier;
         private int label;
