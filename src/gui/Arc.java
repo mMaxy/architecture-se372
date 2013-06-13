@@ -2,30 +2,20 @@ package gui;
 
 /**
  * Created with IntelliJ IDEA.
- * User: prohodil_mimo
+ * User: i.k.
  * Date: 13.06.13
  * Time: 23:34
- * To change this template use File | Settings | File Templates.
  */
 import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 
 public class Arc extends Arc2D {
-    /**
-     * This is an abstract class that cannot be instantiated directly.
-     * Type-specific implementation subclasses are available for
-     * instantiation and provide a number of formats for storing
-     * the information necessary to satisfy the various accessor
-     * methods below.
-     *
-     * @param type The closure type of this arc:
-     *             {@link #OPEN}, {@link #CHORD}, or {@link #PIE}.
-     * @see java.awt.geom.Arc2D.Float
-     * @see java.awt.geom.Arc2D.Double
-     * @since 1.2
-     */
-    protected Arc(int type) {
-        super(type);
+
+    private Node origin, target;
+
+    public Arc(Node origin, Node target) {
+        this.origin = origin;
+        this.target = target;
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.util.*;
  */
 public class Graph {
 
+    private int layers;
     Node[] vertex;
     private Map<Integer, String> dict;
 
@@ -195,30 +196,35 @@ public class Graph {
     }
 
     /**
-     * Находит все лэйблы
+     * Находит все слои
      */
-    public void findLabels() {
+    public void findLayers() {
         List<Node> vert = new ArrayList<Node>();
 
         Collections.addAll(vert, vertex);
 
         findL(vert);
         int i = 1;
-        while (searchNextLabel(i)) i++;
+        while (searchNextLayer(i)) i++;
+        this.layers = i;
+    }
+
+    public int getLayers() {
+        return this.layers;
     }
 
     /**
-     * Поиск следующего лэйбла. Убирает вершины, лэйбл которых определен, из оставшихся строит новый граф и находит лэйбл
-     * @param currentLabel сколько уже лэйблов проставили
+     * Поиск следующего слоя. Убирает вершины, слой которых определен, из оставшихся строит новый граф и находит слой
+     * @param currentLayer сколько уже слоев проставили
      * @return истина, если были вершины для распределения. Ложь, если не было.
      */
-    private boolean searchNextLabel(int currentLabel) {
+    private boolean searchNextLayer(int currentLayer) {
         List<Node> graph = new ArrayList<Node>();
         Map<Integer, Integer> mapGraphToVer = new HashMap<Integer, Integer>();
         Map<Integer, Integer> mapVerToGraph = new HashMap<Integer, Integer>();
 
         for (int i = 0; i < vertex.length; i++) {
-            if (vertex[i].getLabel() == 0 && vertex[i].getAccessModifier() == 1) {
+            if (vertex[i].getLayer() == 0 && vertex[i].getAccessModifier() == 1) {
                 graph.add(new Node());
                 mapGraphToVer.put(graph.size(), i);
                 mapVerToGraph.put(i, graph.size());
@@ -243,8 +249,8 @@ public class Graph {
         findL(graph);
 
         for (int i = 0; i < graph.size(); i++) {
-            if (graph.get(i).getLabel() != 0) {
-                vertex[mapGraphToVer.get(i)].setLabel(i+1);
+            if (graph.get(i).getLayer() != 0) {
+                vertex[mapGraphToVer.get(i)].setLayer(i+1);
             }
         }
         return true;
@@ -257,16 +263,16 @@ public class Graph {
     private void findL(List<Node> graph) {
         for (Node aVertex : graph) {
             if (aVertex.getSizeOfUsing() == 0 && aVertex.getAccessModifier() != 2) {
-                aVertex.setLabel(1);
+                aVertex.setLayer(1);
             }
         }
         int[] crossHandled = findCrossHandledModules(graph);
         for (int aCrossHandled : crossHandled) {
-            graph.get(aCrossHandled).setLabel(1);
+            graph.get(aCrossHandled).setLayer(1);
         }
         List<Integer> loop = findFreeLoop(graph);
         for (int aLoop : loop) {
-            graph.get(aLoop).setLabel(1);
+            graph.get(aLoop).setLayer(1);
         }
     }
 
@@ -471,7 +477,7 @@ public class Graph {
         for (Node node : vertex) {
             List<Integer> usingIndexes = node.getUsing();
             for (Integer i : usingIndexes) {
-                if (vertex[i].getLabel() > node.label) {
+                if (vertex[i].getLayer() > node.layer) {
                     result.add(new Connection(node, vertex[i]));
                 }
             }
@@ -485,59 +491,59 @@ public class Graph {
     public class Node {
 
         private int accessModifier;
-        private int label;
+        private int layer;
         private List<Integer> using = new ArrayList<Integer>();
         private List<Integer> usedBy = new ArrayList<Integer>();
 
-        int getAccessModifier() {
+        public int getAccessModifier() {
             return accessModifier;
         }
 
-        void setAccessModifier(int accessModifier) {
+        public void setAccessModifier(int accessModifier) {
             this.accessModifier = accessModifier;
         }
 
-        String getStringAccessModifier() {
+        public String getStringAccessModifier() {
             return dict.get(this.accessModifier);
         }
 
-        int getLabel() {
-            return label;
+        public int getLayer() {
+            return layer;
         }
 
-        void setLabel(int label) {
-            this.label = label;
+        public void setLayer(int layer) {
+            this.layer = layer;
         }
 
-        List<Integer> getUsing() {
+        public List<Integer> getUsing() {
             return using;
         }
 
-        void setUsing(List<Integer> using) {
+        public void setUsing(List<Integer> using) {
             this.using = using;
         }
 
-        void addUsing(int newPoint) {
+        public void addUsing(int newPoint) {
             this.using.add(newPoint);
         }
 
-        int getSizeOfUsing() {
+        public int getSizeOfUsing() {
             return this.using.size();
         }
 
-        List<Integer> getUsedBy() {
+        public List<Integer> getUsedBy() {
             return usedBy;
         }
 
-        void setUsedBy(List<Integer> usedBy) {
+        public void setUsedBy(List<Integer> usedBy) {
             this.usedBy = usedBy;
         }
 
-        void addUsedBy(int newPoint) {
+        public void addUsedBy(int newPoint) {
             this.usedBy.add(newPoint);
         }
 
-        int getSizeOfUsedBy() {
+        public int getSizeOfUsedBy() {
             return this.usedBy.size();
         }
     }

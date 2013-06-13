@@ -10,12 +10,12 @@ package gui;
 import javax.swing.*;
 import java.awt.*;
 import graph.Graph;
+import java.util.List;
 
 public class GraphPanel extends JPanel{
-    private Graph graph;
-    private Node[] nodes;
+    //private List<Node> nodes;
     //private Arc[] arcs;
-    private Layer[] layers;
+    private List<Layer> layers;
 
     public GraphPanel(){
         super();
@@ -23,6 +23,24 @@ public class GraphPanel extends JPanel{
     }
 
     public GraphPanel(Graph graph){
+        for (int i = 0; i < graph.getLayers(); i++)
+            this.getLayers().add(new Layer(this, i));
 
+        Graph.Node vx;
+        Layer cl;
+        for (int i = 0; i < graph.getVertexes().length; i++) {
+            vx = graph.getVertexes()[i];
+            cl = this.getLayers().get(vx.getLayer());
+            cl.getNodes().add(new Node(cl, i, vx.getUsedBy(), vx.getUsing()));
+        }
     }
+
+    public List<Layer> getLayers() {
+        return layers;
+    }
+
+    public void setLayers(List<Layer> layers) {
+        this.layers = layers;
+    }
+
 }
