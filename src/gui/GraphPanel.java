@@ -15,49 +15,55 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GraphPanel extends JPanel{
-    //private List<Node> nodes;
-    //private Arc[] arcs;
     private List<Layer> layers;
+    private Graph graph;
+
+    @Override
+    public boolean equals(Object o){
+        return true;
+    }
 
     public GraphPanel(){
         layers = new ArrayList<Layer>();
     }
 
     public void setGraph(Graph graph){
-        for (int i = 0; i < graph.getLayers(); i++)
+        this.graph = graph;
+        for (int i = 1; i <= graph.getLayers() + 2; i++)
             this.getLayers().add(new Layer(this, i));
 
         Graph.Node vx;
         Layer cl;
+
+        //выдергивание из теминого графа сначала
         for (int i = 0; i < graph.getVertexes().length; i++) {
             vx = graph.getVertexes()[i];
-            cl = this.getLayers().get(vx.getLayer());
-            cl.getNodes().add(new Node(cl, i));
+            this.getLayers().get(vx.getLayer()).getNodes().add(new Node(this.getLayers().get(vx.getLayer()), i));
         }
-
-        for (Layer l : this.getLayers())
-            for (Node n : l.getNodes()) {
-                n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());
-                n.setOutgoingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsing());
+        for( Layer l : this.getLayers())
+            for (Node n : l.getNodes()){
+                n.setNodeInLayerID();
+                n.setPosition();
             }
     }
 
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.setColor(Color.green);
-
-        //g.fillRect(0, 0, 50, 50);
 
         for( Layer l : this.getLayers()){
+            g.setColor(Color.green);
             g.drawRect((int)l.getX(), (int)l.getY(), (int)l.getWidth(), (int)l.getHeight());
             for (Node n : l.getNodes()){
-                n.setPosition();
-                g.drawOval(
-                        (int)n.getPosition().getX(),
-                        (int)n.getPosition().getY(),
-                        (int)n.getFigure().getWidth(),
-                        (int)n.getFigure().getHeight());
+                n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());
+                n.setOutgoingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsing());
+                g.setColor(Color.black);
+                g.fillOval(
+                    (int) n.getPosition().getX(),
+                    (int) n.getPosition().getY(),
+                    (int) n.getFigure().getWidth(),
+                    (int) n.getFigure().getHeight()
+                );
             }
         }
     }

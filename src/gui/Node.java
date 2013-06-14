@@ -28,9 +28,11 @@ public class Node {
     }
 
     public Node(Layer layer, int nodeID) {
-        this.nodeInLayerID = layer.getNodes().indexOf(this);
+        this();
         this.nodeID = nodeID;
         this.layer = layer;
+
+        System.err.println(this.nodeInLayerID);
     }
 
     public int getNodeID() {
@@ -47,6 +49,10 @@ public class Node {
 
     public void setNodeInLayerID(int nodeInLayerID) {
         this.nodeInLayerID = nodeInLayerID;
+    }
+
+    public void setNodeInLayerID() {
+        this.nodeInLayerID = layer.getNodes().indexOf(this);
     }
 
     public void setPosition(Ellipse2D.Double view) {
@@ -91,8 +97,23 @@ public class Node {
         return this.position;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Node)) return false;
+
+        Node node = (Node) o;
+
+        if (nodeID != node.nodeID) return false;
+        if (!layer.equals(node.layer)) return false;
+
+        return true;
+    }
+
     public void setPosition(){
-        int buf = (int)this.layer.getWidth() * this.layer.getNodes().size() / this.nodeInLayerID;
+        //System.err.println(this.nodeInLayerID);
+        int buf = (int)this.layer.getWidth() * this.layer.getNodes().size() / (this.nodeInLayerID + 1);
+        //System.err.println(buf);
         this.position = new Point((int)this.layer.getX() + (int)(buf % 30), (int)this.layer.getY() + (int)(buf / 30) );
     }
 

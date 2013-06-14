@@ -18,6 +18,28 @@ public class Layer  extends Rectangle {
     private Dimension dimension;
     private Point position;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Layer)) return false;
+        if (!super.equals(o)) return false;
+
+        Layer layer = (Layer) o;
+
+        if (layerID != layer.layerID) return false;
+        if (!graph.equals(layer.graph)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + graph.hashCode();
+        result = 31 * result + layerID;
+        return result;
+    }
+
     public Layer(GraphPanel graph, int layerID){
         super(new Point(15, layerID * 150), new Dimension(graph.getWidth()-30, 100));
         this.graph = graph;

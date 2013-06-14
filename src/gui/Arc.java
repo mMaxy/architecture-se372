@@ -31,6 +31,9 @@ public class Arc extends Arc2D.Double {
         this.origin = origin;
     }
 
+    public Arc(){
+        super();
+    }
 
     public Arc(Node origin, Node target) {
         super(
