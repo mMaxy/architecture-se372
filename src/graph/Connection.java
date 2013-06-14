@@ -1,24 +1,23 @@
 package graph;
 
-import  graph.Graph.Node;
 /**
  * Created on: 14.06.13
  */
 public class Connection {
 
-    private Node from;
-    private Node to;
+    private int from;
+    private int to;
 
-    public Connection(Node from, Node to) {
+    public Connection(int from, int to) {
         this.from = from;
         this.to = to;
     }
 
-    public Node getFrom() {
+    public int getFrom() {
         return from;
     }
 
-    public Node getTo() {
+    public int getTo() {
         return to;
     }
 }

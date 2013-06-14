@@ -252,7 +252,7 @@ public class Graph {
 
         for (int i = 0; i < graph.size(); i++) {
             if (graph.get(i).getLayer() != 0) {
-                vertex[mapGraphToVer.get(i)].setLayer(i+1);
+                vertex[mapGraphToVer.get(i)].setLayer(i + 1);
             }
         }
         return true;
@@ -480,8 +480,18 @@ public class Graph {
             List<Integer> usingIndexes = node.getUsing();
             for (Integer i : usingIndexes) {
                 if (vertex[i].getLayer() > node.layer) {
-                    result.add(new Connection(node, vertex[i]));
+                    result.add(new Connection(indexOfPoint(node), i));
                 }
+            }
+        }
+        return result;
+    }
+
+    public List<Integer> findAllSelfLoops() {
+        List<Integer> result = new ArrayList<Integer>();
+        for (int i = 0; i < vertex.length; i++) {
+            if (vertex[i].getUsing().contains(i)) {
+                result.add(i);
             }
         }
         return result;
