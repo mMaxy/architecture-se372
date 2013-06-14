@@ -11,6 +11,7 @@ import graph.Graph;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GraphPanel extends JPanel{
@@ -19,11 +20,10 @@ public class GraphPanel extends JPanel{
     private List<Layer> layers;
 
     public GraphPanel(){
-        this.setBackground(Color.white);
+        layers = new ArrayList<Layer>();
     }
 
-    public GraphPanel(Graph graph){
-        this();
+    public void setGraph(Graph graph){
         for (int i = 0; i < graph.getLayers(); i++)
             this.getLayers().add(new Layer(this, i));
 
@@ -40,6 +40,18 @@ public class GraphPanel extends JPanel{
                 n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());
                 n.setOutgoingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsing());
             }
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        g.setColor(Color.green);
+
+        g.fillRect(0, 0, 50, 50);
+
+        for( Layer l : this.getLayers()){
+            g.drawRect((int)l.getX(), (int)l.getY(), (int)l.getWidth(), (int)l.getHeight());
+        }
     }
 
     public List<Layer> getLayers() {
