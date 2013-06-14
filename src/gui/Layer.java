@@ -8,6 +8,7 @@ package gui;
  */
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Layer  extends Rectangle {
@@ -18,11 +19,12 @@ public class Layer  extends Rectangle {
     private Point position;
 
     public Layer(GraphPanel graph, int layerID){
-        super(new Point(layerID * 150, (int)((graph.getWidth() - 30) / 2) + 15), new Dimension(graph.getWidth()-30, 100));
+        super(new Point(15, layerID * 150), new Dimension(graph.getWidth()-30, 100));
         this.graph = graph;
         this.layerID = layerID;
         this.dimension = super.getSize();
         this.position = super.getLocation();
+        this.nodes = new ArrayList<Node>();
     }
 
     public GraphPanel getGraph() {

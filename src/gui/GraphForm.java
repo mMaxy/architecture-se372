@@ -67,6 +67,8 @@ public class GraphForm extends Component {
                         graph.findLayers();
                         numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
 
+
+                        ((GraphPanel) graphPanel).setGraph(graph);
                         graphPanel.repaint();
                     } catch (Exception e1) {
 

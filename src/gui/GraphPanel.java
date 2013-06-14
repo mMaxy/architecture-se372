@@ -47,10 +47,18 @@ public class GraphPanel extends JPanel{
         super.paintComponent(g);
         g.setColor(Color.green);
 
-        g.fillRect(0, 0, 50, 50);
+        //g.fillRect(0, 0, 50, 50);
 
         for( Layer l : this.getLayers()){
             g.drawRect((int)l.getX(), (int)l.getY(), (int)l.getWidth(), (int)l.getHeight());
+            for (Node n : l.getNodes()){
+                n.setPosition();
+                g.drawOval(
+                        (int)n.getPosition().getX(),
+                        (int)n.getPosition().getY(),
+                        (int)n.getFigure().getWidth(),
+                        (int)n.getFigure().getHeight());
+            }
         }
     }
 

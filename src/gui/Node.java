@@ -6,8 +6,10 @@ package gui;
  * Date: 13.06.13
  * Time: 23:33
  */
-import javax.swing.*;
-import java.awt.Point;
+
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Node {
@@ -16,7 +18,20 @@ public class Node {
     private Layer layer;
     private List<Arc> incomingArcs;
     private List<Arc> outgoingArcs;
+    private Ellipse2D.Double view;
+    private Dimension figure = new Dimension(5, 5);
     private Point position;
+
+    public Node(){
+        this.incomingArcs = new ArrayList<Arc>();
+        this.outgoingArcs = new ArrayList<Arc>();
+    }
+
+    public Node(Layer layer, int nodeID) {
+        this.nodeInLayerID = layer.getNodes().indexOf(this);
+        this.nodeID = nodeID;
+        this.layer = layer;
+    }
 
     public int getNodeID() {
         return nodeID;
@@ -34,8 +49,8 @@ public class Node {
         this.nodeInLayerID = nodeInLayerID;
     }
 
-    public void setPosition(Point position) {
-        this.position = position;
+    public void setPosition(Ellipse2D.Double view) {
+        this.view = view;
     }
 
     public List<Arc> getIncomingArcs() {
@@ -72,12 +87,6 @@ public class Node {
         this.layer = layer;
     }
 
-    public Node(Layer layer, int nodeID) {
-        this.nodeInLayerID = layer.getNodes().indexOf(this);
-        this.nodeID = nodeID;
-        this.layer = layer;
-    }
-
     public Point getPosition(){
         return this.position;
     }
@@ -85,5 +94,13 @@ public class Node {
     public void setPosition(){
         int buf = (int)this.layer.getWidth() * this.layer.getNodes().size() / this.nodeInLayerID;
         this.position = new Point((int)this.layer.getX() + (int)(buf % 30), (int)this.layer.getY() + (int)(buf / 30) );
+    }
+
+    public void setFigure(Dimension figure){
+        this.figure = figure;
+    }
+
+    public Dimension getFigure(){
+        return this.figure;
     }
 }
