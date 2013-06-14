@@ -43,7 +43,6 @@ public class GraphForm extends Component {
         loadButton.setText("Загрузить");
         commitButton.setText("Пересчитать");
 
-
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser jfc = new JFileChooser();
@@ -66,10 +65,9 @@ public class GraphForm extends Component {
 
                         graph.findLayers();
                         numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
-
-
+                        ((GraphPanel) graphPanel).getLayers().clear();
                         ((GraphPanel) graphPanel).setGraph(graph);
-                        graphPanel.repaint();
+
                     } catch (Exception e1) {
                         e1.printStackTrace();
                         String message = e1.getMessage() == null || e1.getMessage().isEmpty()
@@ -96,6 +94,7 @@ public class GraphForm extends Component {
                 }
             }
         });
+        graphPanel.repaint();
     }
 
     public JPanel getGraphPanel() {

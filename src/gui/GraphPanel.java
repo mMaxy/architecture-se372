@@ -27,6 +27,15 @@ public class GraphPanel extends JPanel{
         layers = new ArrayList<Layer>();
     }
 
+    public List<Node> getNodes(){
+        List<Node> retVal = new ArrayList<Node>();
+        for (Layer l : layers)
+            for (Node n : l.getNodes())
+                retVal.add(n);
+
+        return retVal;
+    }
+
     public void setGraph(Graph graph){
         this.graph = graph;
         for (int i = 1; i <= graph.getLayers() + 2; i++)
@@ -52,7 +61,7 @@ public class GraphPanel extends JPanel{
         super.paintComponent(g);
 
         for( Layer l : this.getLayers()){
-            g.setColor(Color.green);
+            g.setColor(Color.darkGray);
             g.drawRect((int)l.getX(), (int)l.getY(), (int)l.getWidth(), (int)l.getHeight());
             for (Node n : l.getNodes()){
                 n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());

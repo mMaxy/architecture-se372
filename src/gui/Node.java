@@ -31,8 +31,6 @@ public class Node {
         this();
         this.nodeID = nodeID;
         this.layer = layer;
-
-        System.err.println(this.nodeInLayerID);
     }
 
     public int getNodeID() {
@@ -69,7 +67,7 @@ public class Node {
 
     public void setIncomingArcsByIndexes(List<Integer> incomingArcsNodeIndexes) {
         for (int i : incomingArcsNodeIndexes)
-            this.incomingArcs.add(new Arc(this.getLayer().getNodes().get(i), this));
+            this.incomingArcs.add(new Arc(this.getLayer().getGraph().getNodes().get(i), this));
     }
 
     public List<Arc> getOutgoingArcs() {
@@ -82,7 +80,7 @@ public class Node {
 
     public void setOutgoingArcsByIndexes(List<Integer> outgoingArcsNodeIndexes) {
             for (int i : outgoingArcsNodeIndexes)
-                this.outgoingArcs.add(new Arc(this, this.getLayer().getNodes().get(i)));
+                this.outgoingArcs.add(new Arc(this, this.getLayer().getGraph().getNodes().get(i)));
         }
 
     public Layer getLayer() {
@@ -111,10 +109,9 @@ public class Node {
     }
 
     public void setPosition(){
-        //System.err.println(this.nodeInLayerID);
-        int buf = (int)this.layer.getWidth() * this.layer.getNodes().size() / (this.nodeInLayerID + 1);
-        //System.err.println(buf);
-        this.position = new Point((int)this.layer.getX() + (int)(buf % 30), (int)this.layer.getY() + (int)(buf / 30) );
+        this.position = new Point(
+            (int)this.layer.getX() + (int)this.layer.getWidth() / (this.layer.getNodes().size() + 1) * (this.nodeInLayerID + 1),
+            (int)this.layer.getY() + 50);
     }
 
     public void setFigure(Dimension figure){
