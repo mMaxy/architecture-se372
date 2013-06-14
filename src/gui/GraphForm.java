@@ -71,7 +71,11 @@ public class GraphForm extends Component {
                         ((GraphPanel) graphPanel).setGraph(graph);
                         graphPanel.repaint();
                     } catch (Exception e1) {
-
+                        e1.printStackTrace();
+                        String message = e1.getMessage() == null || e1.getMessage().isEmpty()
+                                ? "Неизвестная ошибка (" + e1.toString() + ")"
+                                : e1.getMessage();
+                        JOptionPane.showMessageDialog(graphPanel, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
                     }
                 } else {
                     System.err.println("Open command cancelled by user.");
