@@ -143,10 +143,10 @@ public class Graph {
      * Строит матрицу смежности
      * @return матрицу смежности
      */
-    public Object[][] buildAdjacencyMatrix() {
-        Object[][] res = new Object[this.vertex.length][];
+    public int[][] buildAdjacencyMatrix() {
+        int[][] res = new int[this.vertex.length][];
         for (int i = 0; i < this.vertex.length; i ++) {
-            res[i] = new Object[this.vertex.length];
+            res[i] = new int[this.vertex.length];
         }
 
         for (int i = 0; i < this.vertex.length; i++) {

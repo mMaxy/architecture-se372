@@ -10,24 +10,26 @@ package gui;
 import graph.Graph;
 
 import javax.swing.*;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableModel;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ContainerAdapter;
 import java.io.File;
 import java.io.FileReader;
 
 public class GraphForm extends Component {
     private JPanel boringPanel;
-    private JTable matrixTable;
     private JLabel captionLabel;
     private JLabel numberOfLayersCaptionLabel;
     private JLabel numberOfLayersLabel;
     private JPanel graphPanel;
     private JPanel wrapperPanel;
-    private JScrollPane matrixTableWrapper;
     private JButton loadButton;
+    private JTextArea matrixTextArea;
+    private JButton commitButton;
 
     private Graph graph;
 
@@ -41,9 +43,10 @@ public class GraphForm extends Component {
 
     public GraphForm(){
         captionLabel.setText("Матрица смежности");
-        numberOfLayersCaptionLabel.setText("Количество слоев");
+        numberOfLayersCaptionLabel.setText("Количество слоев:");
         loadButton.setText("Загрузить");
-        loadButton.doClick();
+        commitButton.setText("Пересчитать");
+
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser jfc = new JFileChooser();
@@ -54,11 +57,20 @@ public class GraphForm extends Component {
                         graph = new Graph(arr.length);
                         graph.setGraphFromMatrix(arr);
 
-                        graph.findLayers();
-                        graph.buildAdjacencyMatrix();
+                        int[][] matrix = graph.buildAdjacencyMatrix();
+                        String matrixToText = "";
+                        for(int[] r : matrix){
+                            for (int c : r)
+                                matrixToText += c + " ";
+                            matrixToText += "\n";
+                        }
+
+                        matrixTextArea.setText(matrixToText);
+
+                        //graph.findLayers();
+                        numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
 
                         graphPanel = new GraphPanel(graph);
-                        matrixTable = new JTable(graph.buildAdjacencyMatrix(), new Object[graph.buildAdjacencyMatrix().length]);
                     } catch (Exception e1) {
                         e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
@@ -66,6 +78,11 @@ public class GraphForm extends Component {
                 else {
                     System.err.println("Open command cancelled by user.");
                 }
+            }
+        });
+        commitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+
             }
         });
     }
