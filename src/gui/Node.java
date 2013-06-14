@@ -18,6 +18,26 @@ public class Node {
     private List<Arc> outgoingArcs;
     private Point position;
 
+    public int getNodeID() {
+        return nodeID;
+    }
+
+    public void setNodeID(int nodeID) {
+        this.nodeID = nodeID;
+    }
+
+    public int getNodeInLayerID() {
+        return nodeInLayerID;
+    }
+
+    public void setNodeInLayerID(int nodeInLayerID) {
+        this.nodeInLayerID = nodeInLayerID;
+    }
+
+    public void setPosition(Point position) {
+        this.position = position;
+    }
+
     public List<Arc> getIncomingArcs() {
         return incomingArcs;
     }
@@ -58,9 +78,12 @@ public class Node {
         this.layer = layer;
     }
 
-    public void setPosition(){
-        int buf = this.layer.getNodes().size()/this.nodeInLayerID;
-        this.position = new Point(buf % 30, this.layer.y + buf / 30 );
+    public Point getPosition(){
+        return this.position;
     }
 
+    public void setPosition(){
+        int buf = (int)this.layer.getWidth() * this.layer.getNodes().size() / this.nodeInLayerID;
+        this.position = new Point((int)this.layer.getX() + (int)(buf % 30), (int)this.layer.getY() + (int)(buf / 30) );
+    }
 }

@@ -23,6 +23,7 @@ public class GraphPanel extends JPanel{
     }
 
     public GraphPanel(Graph graph){
+        this();
         for (int i = 0; i < graph.getLayers(); i++)
             this.getLayers().add(new Layer(this, i));
 
@@ -31,8 +32,14 @@ public class GraphPanel extends JPanel{
         for (int i = 0; i < graph.getVertexes().length; i++) {
             vx = graph.getVertexes()[i];
             cl = this.getLayers().get(vx.getLayer());
-            cl.getNodes().add(new Node(cl, i, vx.getUsedBy(), vx.getUsing()));
+            cl.getNodes().add(new Node(cl, i));
         }
+
+        for (Layer l : this.getLayers())
+            for (Node n : l.getNodes()) {
+                n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());
+                n.setOutgoingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsing());
+            }
     }
 
     public List<Layer> getLayers() {
