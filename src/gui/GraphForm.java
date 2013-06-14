@@ -37,6 +37,7 @@ public class GraphForm extends Component {
     }
 
     public GraphForm(){
+        graphPanel = new GraphPanel();
         captionLabel.setText("Матрица смежности");
         numberOfLayersCaptionLabel.setText("Количество слоев:");
         loadButton.setText("Загрузить");
@@ -62,16 +63,13 @@ public class GraphForm extends Component {
 
                         matrixTextArea.setText(matrixToText);
 
+
                         graph.findLayers();
                         numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
 
                         graphPanel = new GraphPanel(graph);
                     } catch (Exception e1) {
-                        String message = e1.getMessage() == null || e1.getMessage().isEmpty()
-                                ? "Неизвестная ошибка (" + e1.toString() + ")"
-                                : e1.getMessage();
-                        JOptionPane.showMessageDialog(null, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
-                        e1.printStackTrace();
+
                     }
                 }
                 else {
@@ -81,7 +79,16 @@ public class GraphForm extends Component {
         });
         commitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                String[] pMatrix = matrixTextArea.getText().split("\n");
+                int[][] matrix = new int[pMatrix.length][];
+                String[][] p2Matrix = new String[pMatrix.length][];
 
+                for(int i = 0; i < pMatrix.length; i++) {
+                    p2Matrix[i] = pMatrix[i].split(" ");
+                    matrix[i] = new int[p2Matrix[i].length];
+                    for (int j = 0; j < p2Matrix[i].length; i++)
+                        matrix[i][j] = Integer.parseInt(p2Matrix[i][j]);
+                }
             }
         });
     }

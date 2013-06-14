@@ -7,9 +7,10 @@ package gui;
  * Time: 22:48
  */
 
+import graph.Graph;
+
 import javax.swing.*;
 import java.awt.*;
-import graph.Graph;
 import java.util.List;
 
 public class GraphPanel extends JPanel{
@@ -18,7 +19,6 @@ public class GraphPanel extends JPanel{
     private List<Layer> layers;
 
     public GraphPanel(){
-        super();
         this.setBackground(Color.white);
     }
 
