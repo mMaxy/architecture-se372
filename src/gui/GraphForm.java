@@ -10,6 +10,8 @@ package gui;
 import graph.Graph;
 
 import javax.swing.*;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -42,18 +44,26 @@ public class GraphForm extends Component {
         numberOfLayersCaptionLabel.setText("Количество слоев");
         loadButton.setText("Загрузить");
         loadButton.doClick();
-        graphPanel = new GraphPanel();
         loadButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser jfc = new JFileChooser();
                 int returnVal = jfc.showOpenDialog(GraphForm.this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     try {
-                        graph.setGraphFromMatrix(graph.readFromFile(new FileReader(jfc.getSelectedFile().getPath())));
+                        int[][] arr = Graph.readFromFile(new FileReader(jfc.getSelectedFile().getPath()));
+                        graph = new Graph(arr.length);
+                        graph.setGraphFromMatrix(arr);
+
+                        graph.findLayers();
+                        graph.buildAdjacencyMatrix();
+
+                        graphPanel = new GraphPanel(graph);
+                        matrixTable = new JTable(graph.buildAdjacencyMatrix(), new Object[graph.buildAdjacencyMatrix().length]);
                     } catch (Exception e1) {
                         e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
                     }
-                } else {
+                }
+                else {
                     System.err.println("Open command cancelled by user.");
                 }
             }

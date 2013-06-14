@@ -12,7 +12,7 @@ import java.util.*;
 public class Graph {
 
     private int layers;
-    Node[] vertex;
+    private Node[] vertex;
     private Map<Integer, String> dict;
 
     {
@@ -28,7 +28,8 @@ public class Graph {
      */
     public Graph(int size) throws IllegalArgumentException {
         if (size <= 0) throw new IllegalArgumentException("Количество вершин в графе должно быть строго больше 0");
-        vertex = new Node[size];
+        this.vertex = new Node[size];
+        for (int i = 0; i < size; i++) vertex[i] = new Node();
     }
 
     /**
@@ -50,7 +51,7 @@ public class Graph {
         if (adjacencyMatrix == null) throw new IllegalArgumentException();
         if (adjacencyMatrix.length != adjacencyMatrix[0].length)
             throw new IllegalArgumentException("Матрица должна быть квадратная");
-        if (adjacencyMatrix.length != vertex.length)
+        if (adjacencyMatrix.length != this.vertex.length)
             throw new IllegalArgumentException("Матрица должна соответствовать количеству вершин");
 
         for (int i = 0; i < adjacencyMatrix.length; i++) {
@@ -58,9 +59,9 @@ public class Graph {
                 if (adjacencyMatrix[i][j] == 0) continue;
                 if (adjacencyMatrix[i][j] > 2)
                     throw new IllegalArgumentException("В матрице можно использовать только 0 1 и 2");
-                vertex[i].addUsing(j);
-                vertex[j].addUsedBy(i);
-                vertex[i].setAccessModifier(adjacencyMatrix[i][j]);
+                this.vertex[i].addUsing(j);
+                this.vertex[j].addUsedBy(i);
+                this.vertex[i].setAccessModifier(adjacencyMatrix[i][j]);
             }
         }
     }
@@ -76,9 +77,9 @@ public class Graph {
             throw new IllegalArgumentException("список должен состоять из трех элементов. Neither more, nor less");
         for (int i = 0; i < list.length; i++) {
             if (list[i][2] == 0) continue;
-            vertex[list[i][0]].addUsing(list[i][1]);
-            vertex[list[i][1]].addUsedBy(list[i][0]);
-            vertex[i].setAccessModifier(list[i][2]);
+            this.vertex[list[i][0]].addUsing(list[i][1]);
+            this.vertex[list[i][1]].addUsedBy(list[i][0]);
+            this.vertex[i].setAccessModifier(list[i][2]);
         }
     }
 
@@ -88,7 +89,7 @@ public class Graph {
      * @return массив прочитанного(может быть как квадратным, так и 2*n)
      * @throws Exception
      */
-    public int[][] readFromFile(FileReader fr) throws Exception {
+    public static int[][] readFromFile(FileReader fr) throws Exception {
         List<int[]> res = new ArrayList<int[]>();
         BufferedReader br = new BufferedReader(fr);
         String[] splited;
@@ -134,23 +135,24 @@ public class Graph {
         } finally {
             br.close();
         }
-        return (int[][]) res.toArray();
+
+        return res.toArray(new int[res.size()][]);
     }
 
     /**
      * Строит матрицу смежности
      * @return матрицу смежности
      */
-    public int[][] buildAdjacencyMatrix() {
-        int[][] res = new int[vertex.length][];
-        for (int i = 0; i < vertex.length; i ++) {
-            res[i] = new int[vertex.length];
+    public Object[][] buildAdjacencyMatrix() {
+        Object[][] res = new Object[this.vertex.length][];
+        for (int i = 0; i < this.vertex.length; i ++) {
+            res[i] = new Object[this.vertex.length];
         }
 
-        for (int i = 0; i < vertex.length; i++) {
-            List<Integer> connections = vertex[i].getUsing();
+        for (int i = 0; i < this.vertex.length; i++) {
+            List<Integer> connections = this.vertex[i].getUsing();
             for (Integer connection : connections) {
-                res[i][connection] = vertex[connection].getAccessModifier();
+                res[i][connection] = this.vertex[connection].getAccessModifier();
             }
         }
 
@@ -162,7 +164,7 @@ public class Graph {
      * @return массив вершин
      */
     public Node[] getVertexes() {
-        return vertex;
+        return this.vertex;
     }
 
     /**
@@ -185,14 +187,14 @@ public class Graph {
             if (using.get(i) == to)
                 break;
         }
-        vertex[from].getUsing().remove(i);
+        this.vertex[from].getUsing().remove(i);
 
         List<Integer> usedBy = vertex[to].getUsedBy();
         for (i = 0; i < usedBy.size(); i++) {
             if (usedBy.get(i) == from)
                 break;
         }
-        vertex[to].getUsedBy().remove(i);
+        this.vertex[to].getUsedBy().remove(i);
     }
 
     /**
@@ -201,7 +203,7 @@ public class Graph {
     public void findLayers() {
         List<Node> vert = new ArrayList<Node>();
 
-        Collections.addAll(vert, vertex);
+        Collections.addAll(vert, this.vertex);
 
         findL(vert);
         int i = 1;
@@ -492,8 +494,13 @@ public class Graph {
 
         private int accessModifier;
         private int layer;
-        private List<Integer> using = new ArrayList<Integer>();
-        private List<Integer> usedBy = new ArrayList<Integer>();
+        private List<Integer> using;
+        private List<Integer> usedBy;
+
+        public Node() {
+            this.using = new ArrayList<Integer>();
+            this.usedBy = new ArrayList<Integer>();
+        }
 
         public int getAccessModifier() {
             return accessModifier;
