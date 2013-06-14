@@ -397,6 +397,7 @@ public class Graph {
             markMap.put(currentNode, 2);
             return markMap;
         }
+        markMap.put(currentNode, 1);
         boolean containsGray = false;
         boolean containsBlack = false;
         List<Node> notMarked = new ArrayList<Node>();
@@ -416,6 +417,7 @@ public class Graph {
                     break;
                 default: break;
             }
+        }
             if (notMarked.isEmpty()) {
                 if (containsGray) {
                     markMap.put(currentNode, 1);
@@ -440,7 +442,6 @@ public class Graph {
                     default:
                         break;
             }
-        }
         return markMap;
     }
 

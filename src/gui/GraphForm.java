@@ -10,14 +10,9 @@ package gui;
 import graph.Graph;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ContainerAdapter;
-import java.io.File;
 import java.io.FileReader;
 
 public class GraphForm extends Component {
@@ -67,12 +62,16 @@ public class GraphForm extends Component {
 
                         matrixTextArea.setText(matrixToText);
 
-                        //graph.findLayers();
+                        graph.findLayers();
                         numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
 
                         graphPanel = new GraphPanel(graph);
                     } catch (Exception e1) {
-                        e1.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                        String message = e1.getMessage() == null || e1.getMessage().isEmpty()
+                                ? "Неизвестная ошибка (" + e1.toString() + ")"
+                                : e1.getMessage();
+                        JOptionPane.showMessageDialog(null, message, "Ошибка", JOptionPane.ERROR_MESSAGE);
+                        e1.printStackTrace();
                     }
                 }
                 else {
