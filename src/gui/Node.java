@@ -20,6 +20,7 @@ public class Node {
     private List<Arc> outgoingArcs;
     private Ellipse2D.Double view;
     private Dimension figure = new Dimension(20, 20);
+    private Point[] anchors;
     private Point position;
     private State state;
 
@@ -44,6 +45,30 @@ public class Node {
         this.nodeID = nodeID;
         this.layer = layer;
         state = State.NORMAL;
+    }
+
+    private void loadAnchors() {
+        int x = (int)this.position.getX();
+        int y = (int)this.position.getY();
+        int qr = (int)Math.sqrt(((int) this.getFigure().getWidth() / 2) ^ 2 + ((int) this.getFigure().getHeight() / 2) ^ 2);
+        this.anchors = new Point[]{
+                new Point(x + 10, y),
+                new Point(x + 10 + qr, y + qr),
+                new Point(x + 20, y + 10),
+                new Point(x + 10 + qr, y + 10 + qr),
+                new Point(x + 10, y + 20),
+                new Point(x + qr, y + 10 + qr),
+                new Point(x, y + 10),
+                new Point(x + qr, y + qr)
+        };
+    }
+
+    public Point[] getAnchors() {
+        return this.anchors;
+    }
+
+    public Point getClosestAnchor(Point p) {
+
     }
 
     public int getNodeID() {
