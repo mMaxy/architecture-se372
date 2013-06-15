@@ -9,7 +9,6 @@ package gui;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,6 +105,10 @@ public class Node {
 
     public void setIncomingArcs(List<Arc> incomingArcs) {
         this.incomingArcs = incomingArcs;
+    }
+
+    public List<Arc> getIncomingArcs() {
+        return incomingArcs;
     }
 
     public void setIncomingArcsByIndexes(List<Integer> incomingArcsNodeIndexes) {

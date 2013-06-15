@@ -81,6 +81,8 @@ public class GraphForm extends Component {
                         matrix[i][j] = Integer.parseInt(p2Matrix[i][j]);
                 }
                 loadGraph(matrix);
+                ((GraphPanel)graphPanel).analyzeGraph();
+                graphPanel.repaint();
             }
         });
         graphPanel.addMouseListener(new MouseAdapter() {
@@ -127,7 +129,6 @@ public class GraphForm extends Component {
         ((GraphPanel) graphPanel).getLayers().clear();
         ((GraphPanel) graphPanel).getNodes().clear();
         ((GraphPanel) graphPanel).setGraph(graph);
-        //((GraphPanel) graphPanel).analyzeGraph();
         graphPanel.repaint();
     }
 

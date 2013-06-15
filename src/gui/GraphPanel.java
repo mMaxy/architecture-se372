@@ -39,8 +39,8 @@ public class GraphPanel extends JPanel {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                for(Node n : nodes)
-                    if (n.getView().getBounds().contains(e.getPoint())){
+                for (Node n : nodes)
+                    if (n.getView().getBounds().contains(e.getPoint())) {
                         setCursor(new Cursor(Cursor.MOVE_CURSOR));
                         dragging = true;
                         draggedNode = n;
@@ -53,7 +53,7 @@ public class GraphPanel extends JPanel {
             @Override
             public void mouseReleased(MouseEvent e) {
                 for (Layer l : layers)
-                    if (l.contains(e.getPoint())){
+                    if (l.contains(e.getPoint())) {
                         draggedNode.getLayer().getNodes().remove(draggedNode);
                         draggedNode.setLayer(l);
                         draggedNode.setState(State.NORMAL);
@@ -105,15 +105,13 @@ public class GraphPanel extends JPanel {
     }
 
     public void analyzeGraph() {
-        if (graph == null)
-            return;
+        if (graph == null) return;
 
         // analyzing conflict bindings
         List<Connection> connections = graph.findAllConflictBindings();
         for (Connection c : connections) {
             Arc arc = findArc(c);
-            if (arc != null)
-                arc.setState(State.INCORRECT);
+            if (arc != null) arc.setState(State.INCORRECT);
         }
 
         // analyzing self loops
@@ -128,13 +126,16 @@ public class GraphPanel extends JPanel {
         List<Node> nodes = getNodes();
         for (Node node : nodes) {
             if (node.getNodeID() == connection.getFrom()) {
-                for (Arc arc : node.getOutgoingArcs()) {
+                List<Arc> outgoingArcs = node.getOutgoingArcs();
+                for (Arc arc : outgoingArcs) {
                     if (arc.getTarget().getNodeID() == connection.getTo()) {
                         return arc;
                     }
                 }
-            } else if (node.getNodeID() == connection.getTo()) {
-                for (Arc arc : node.getOutgoingArcs()) {
+            }
+            else if (node.getNodeID() == connection.getTo()) {
+                List<Arc> incomingArcs = node.getIncomingArcs();
+                for (Arc arc : incomingArcs) {
                     if (arc.getTarget().getNodeID() == connection.getFrom()) {
                         return arc;
                     }
@@ -153,22 +154,29 @@ public class GraphPanel extends JPanel {
             //Drawing a layer
             g.setColor(Color.darkGray);
             g.drawRect((int) l.getX(), (int) l.getY(), (int) l.getWidth(), (int) l.getHeight());
-            g2.drawString("Layer " + l.getLayerID(), (float)l.getX() + 5, (float)l.getY()+ 15);
+            g2.drawString("Layer " + l.getLayerID(), (float) l.getX() + 5, (float) l.getY() + 15);
 
             for (Node n : l.getNodes()) {
-                g.setColor(standardColor);
+                Color nodeColor = n.getState() == State.NORMAL
+                        ? standardColor
+                        : n.getState() == State.IN_CYCLE
+                                ? cycleColor
+                                : n.getState() == State.INCORRECT
+                                        ? errorColor
+                                        : Color.darkGray;
+                g2.setColor(nodeColor);
                 g2.draw(n.getView());
+                g2.drawString(Integer.toString(n.getNodeID()), (int) n.getCenterOf().getX() - 3,
+                              (int) n.getCenterOf().getY() + 5);
                 for (Arc a : n.getOutgoingArcs()) {
                     g2.setColor(a.getState() == State.NORMAL
                                         ? standardColor
                                         : a.getState() == State.IN_CYCLE
                                                 ? cycleColor
-                                                : errorColor
-                    );
+                                                : errorColor);
                     g2.draw(a);
                     g2.fillPolygon(a.getEnd());
                 }
-                g2.drawString(Integer.toString(n.getNodeID()), (int)n.getCenterOf().getX() - 3, (int)n.getCenterOf().getY() + 5);
             }
         }
     }

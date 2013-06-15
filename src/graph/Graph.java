@@ -554,7 +554,7 @@ public class Graph {
         for (Node node : vertex) {
             List<Integer> usingIndexes = node.getUsing();
             for (int i : usingIndexes) {
-                if (vertex[i].getLayer() < node.layer) {
+                if (vertex[i].getLayer() > node.layer) {
                     result.add(new Connection(indexOfPoint(node), i));
                 }
             }
