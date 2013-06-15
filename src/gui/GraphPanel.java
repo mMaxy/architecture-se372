@@ -23,6 +23,7 @@ public class GraphPanel extends JPanel {
     private final Color standardColor = Color.BLACK;
     private final Color cycleColor = Color.GREEN;
     private final Color errorColor = Color.RED;
+    private final Color textColor = Color.WHITE;
 
     public boolean equals(Object o) {
         return true;
@@ -126,13 +127,9 @@ public class GraphPanel extends JPanel {
                     );
                     g2.draw(a);
                     g2.fillPolygon(a.getEnd());
-                    g.setColor(Color.white);
-                    g2.drawString(Integer.toString(n.getNodeID()), (int)n.getPosition().getX() + 7, (int)n.getPosition().getY() + 15);
                 }
-                /*for (Arc a : n.getIncomingArcs()) {
-                    g2.draw(a);
-                    g2.fillPolygon(a.getEnd());
-                }*/
+                g.setColor(textColor);
+                g2.drawString(Integer.toString(n.getNodeID()), (int)n.getPosition().getX() + 7, (int)n.getPosition().getY() + 15);
             }
         }
     }
