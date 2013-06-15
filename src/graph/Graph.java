@@ -313,7 +313,7 @@ public class Graph {
         alreadyChecked.add(v);
         for (int j = 0; j < using.size(); j++) {
             if (graph.get(using.get(j)).getUsing().contains(v)) {
-                res = res && check(graph, alreadyChecked, j);
+                res = res && check(graph, alreadyChecked, using.get(j));
             } else {
                 res = false;
             }
