@@ -9,6 +9,7 @@ package gui;
 
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,14 +31,8 @@ public class Node {
         state = State.NORMAL;
     }
 
-    public Node(Node n, Point p){
-        this.incomingArcs = n.getIncomingArcs();
-        this.outgoingArcs = n.getOutgoingArcs();
-        this.layer = n.getLayer();
-        this.nodeID = n.getNodeID();
-        this.nodeInLayerID = n.getNodeInLayerID();
-        this.position = p;
-        this.state = State.NORMAL;
+    public Ellipse2D.Double getView() {
+        return view;
     }
 
     public Node(Layer layer, int nodeID) {
@@ -48,27 +43,40 @@ public class Node {
     }
 
     private void loadAnchors() {
-        int x = (int)this.position.getX();
-        int y = (int)this.position.getY();
-        int qr = (int)Math.sqrt(((int) this.getFigure().getWidth() / 2) ^ 2 + ((int) this.getFigure().getHeight() / 2) ^ 2);
+        int x = (int)view.x;
+        int y = (int)view.y;
         this.anchors = new Point[]{
                 new Point(x + 10, y),
-                new Point(x + 10 + qr, y + qr),
+                new Point(x + 17, y + 3),
                 new Point(x + 20, y + 10),
-                new Point(x + 10 + qr, y + 10 + qr),
+                new Point(x + 17, y + 17),
                 new Point(x + 10, y + 20),
-                new Point(x + qr, y + 10 + qr),
+                new Point(x + 3, y + 17),
                 new Point(x, y + 10),
-                new Point(x + qr, y + qr)
+                new Point(x + 3, y + 3)
         };
     }
 
     public Point[] getAnchors() {
-        return this.anchors;
+        return anchors;
     }
 
     public Point getClosestAnchor(Point p) {
+        double d = anchors[0].distance(p.x, p.y);
+        int result = 0;
+        for (int i = 1; i < anchors.length; i++)
+            if (anchors[i].distance(p.x, p.y) <= d) {
+                d = anchors[i].distance(p.x, p.y);
+                result = i;
+            }
+        return anchors[result];
+    }
 
+    public Point getCenterOf(){
+      return new Point(
+              (int)(this.view.x + this.view.width / 2),
+              (int)(this.view.y + this.view.height / 2)
+      );
     }
 
     public int getNodeID() {
@@ -91,14 +99,6 @@ public class Node {
         this.nodeInLayerID = layer.getNodes().indexOf(this);
     }
 
-    public void setPosition(Ellipse2D.Double view) {
-        this.view = view;
-    }
-
-    public List<Arc> getIncomingArcs() {
-        return incomingArcs;
-    }
-
     public void setIncomingArcs(List<Arc> incomingArcs) {
         this.incomingArcs = incomingArcs;
     }
@@ -112,10 +112,6 @@ public class Node {
         return outgoingArcs;
     }
 
-    public void setOutgoingArcs(List<Arc> outgoingArcs) {
-        this.outgoingArcs = outgoingArcs;
-    }
-
     public void setOutgoingArcsByIndexes(List<Integer> outgoingArcsNodeIndexes) {
         for (int i : outgoingArcsNodeIndexes)
             this.outgoingArcs.add(new Arc(this, this.getLayer().getGraph().getNodes().get(i)));
@@ -123,14 +119,6 @@ public class Node {
 
     public Layer getLayer() {
         return this.layer;
-    }
-
-    public void setLayer(Layer layer){
-        this.layer = layer;
-    }
-
-    public Point getPosition(){
-        return this.position;
     }
 
     public State getState() {
@@ -154,21 +142,11 @@ public class Node {
         return true;
     }
 
-    public void setPosition(Point position){
-        this.position = position;
-    }
-
     public void setPosition(){
         this.position = new Point(
             (int)this.layer.getX() + (int)this.layer.getWidth() / (this.layer.getNodes().size() + 1) * (this.nodeInLayerID + 1),
             (int)this.layer.getY() + 50);
-    }
-
-    public void setFigure(Dimension figure){
-        this.figure = figure;
-    }
-
-    public Dimension getFigure(){
-        return this.figure;
+        this.view = new Ellipse2D.Double(position.x, position.y, figure.width, figure.height);
+        this.loadAnchors();
     }
 }
