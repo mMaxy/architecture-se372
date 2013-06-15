@@ -29,6 +29,16 @@ public class Node {
         state = State.NORMAL;
     }
 
+    public Node(Node n, Point p){
+        this.incomingArcs = n.getIncomingArcs();
+        this.outgoingArcs = n.getOutgoingArcs();
+        this.layer = n.getLayer();
+        this.nodeID = n.getNodeID();
+        this.nodeInLayerID = n.getNodeInLayerID();
+        this.position = p;
+        this.state = State.NORMAL;
+    }
+
     public Node(Layer layer, int nodeID) {
         this();
         this.nodeID = nodeID;
@@ -117,6 +127,10 @@ public class Node {
         if (!layer.equals(node.layer)) return false;
 
         return true;
+    }
+
+    public void setPosition(Point position){
+        this.position = position;
     }
 
     public void setPosition(){

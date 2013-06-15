@@ -8,9 +8,9 @@ package gui;
  */
 
 import java.awt.*;
-import java.awt.geom.Line2D;
+import java.awt.geom.QuadCurve2D;
 
-public class Arc extends Line2D.Double {/* QuadCurve2D.Double {*/
+public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
 
     private Node origin;
     private Node target;
@@ -52,19 +52,37 @@ public class Arc extends Line2D.Double {/* QuadCurve2D.Double {*/
     }
 
     public Arc(Node origin, Node target) {
-        super(
-                origin.getPosition().getX() + origin.getFigure().getWidth() / 2,
-                origin.getPosition().getY() + origin.getFigure().getHeight() / 2,
-                /*(origin.getPosition().getX() + target.getPosition().getX()) / 2,
-                (origin.getPosition().getY() + target.getPosition().getY()) / 2,*/
-                target.getPosition().getX() + target.getFigure().getWidth() / 2,
-                target.getPosition().getY() + target.getFigure().getHeight() / 2
+        this();
+        this.origin = new Node(origin, new Point(
+                (int)(origin.getPosition().getX() + origin.getFigure().getWidth() / 2),
+                (int)(origin.getPosition().getY() + origin.getFigure().getHeight() / 2)
+        ));
+        this.target = new Node(target, new Point(
+                (int) (target.getPosition().getX() + target.getFigure().getWidth() / 2),
+                (int) (target.getPosition().getY() + target.getFigure().getHeight() / 2)
+        ));
+        this.control = new Point(
+                (int)(origin.getPosition().getX() + target.getPosition().getX()) / 2,
+                (int)(origin.getPosition().getY() + target.getPosition().getY()) / 2
+        );
+
+        for (Node n : this.getOrigin().getLayer().getGraph().getNodes())
+                if (new Rectangle(n.getPosition(), n.getFigure()).contains(this.control)) {
+                    if (this.origin.getLayer() == n.getLayer())
+                        this.control.setLocation(this.control.x , this.control.y - 40);
+                    else
+                        this.control.setLocation(this.control.x - 40 , this.control.y);
+                }
+
+
+
+        this.setCurve(
+        //this.setLine(
+                this.origin.getPosition(),
+                this.control,
+                this.target.getPosition()
             );
-        //this.control = new Point((int)this.getCtrlPt().getX(), (int)this.getCtrlPt().getY());
-        this.origin = origin;
-        this.target = target;
-        //double angle = angleBetween(target.getPosition(), control, new Point(0, (int)target.getPosition().getY()));
-        double angle = angleBetween(target.getPosition(), origin.getPosition(), new Point(0, (int)target.getPosition().getY()));
+        double angle = angleBetween(this.target.getPosition(), this.control, new Point(0, (int)this.target.getPosition().getY()));
         this.end = new Polygon(
                 new int[]{
                         (int) (this.getX2() - 10 * Math.cos(angle)),
