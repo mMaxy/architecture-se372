@@ -6,5 +6,6 @@ package gui;
 public enum State {
     NORMAL,
     IN_CYCLE,
-    INCORRECT
+    INCORRECT,
+    DRAGGED
 }

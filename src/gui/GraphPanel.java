@@ -12,6 +12,8 @@ import graph.Graph;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +33,43 @@ public class GraphPanel extends JPanel {
     public GraphPanel() {
         this.layers = new ArrayList<Layer>();
         this.nodes = new ArrayList<Node>();
+        this.addMouseListener(new MouseAdapter() {
+            boolean dragging = false;
+            Node draggedNode;
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                for(Node n : nodes)
+                    if (n.getView().getBounds().contains(e.getPoint())){
+                        setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                        dragging = true;
+                        draggedNode = n;
+                        draggedNode.setState(State.DRAGGED);
+                        return;
+                    }
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                for (Layer l : layers)
+                    if (l.contains(e.getPoint())){
+                        draggedNode.getLayer().getNodes().remove(draggedNode);
+                        draggedNode.setLayer(l);
+                        draggedNode.setState(State.NORMAL);
+                        l.getNodes().add(draggedNode);
+                        dragging = false;
+                        setCursor(Cursor.getDefaultCursor());
+                        repaint();
+                        return;
+                    }
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+        });
     }
 
     public List<Node> getNodes() {
@@ -57,6 +96,11 @@ public class GraphPanel extends JPanel {
             for (Node n : l.getNodes()) {
                 n.setNodeInLayerID();
                 n.setPosition();
+            }
+        for (Layer l : this.getLayers())
+            for (Node n : l.getNodes()) {
+                n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());
+                n.setOutgoingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsing());
             }
     }
 
@@ -112,8 +156,6 @@ public class GraphPanel extends JPanel {
             g2.drawString("Layer " + l.getLayerID(), (float)l.getX() + 5, (float)l.getY()+ 15);
 
             for (Node n : l.getNodes()) {
-                n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());
-                n.setOutgoingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsing());
                 g.setColor(standardColor);
                 g2.draw(n.getView());
                 for (Arc a : n.getOutgoingArcs()) {

@@ -13,6 +13,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.FileReader;
 
 public class GraphForm extends Component {
@@ -25,6 +27,8 @@ public class GraphForm extends Component {
     private JButton loadButton;
     private JTextArea matrixTextArea;
     private JButton commitButton;
+
+    private boolean dragging = false;
 
     private Graph graph;
 
@@ -77,6 +81,29 @@ public class GraphForm extends Component {
                         matrix[i][j] = Integer.parseInt(p2Matrix[i][j]);
                 }
                 loadGraph(matrix);
+            }
+        });
+        graphPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                for(Node n : ((GraphPanel)graphPanel).getNodes())
+                    if (n.getView().getBounds().contains(e.getPoint())){
+                        setCursor(new Cursor(Cursor.MOVE_CURSOR));
+                        dragging = true;
+
+
+                    }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);    //To change body of overridden methods use File | Settings | File Templates.
             }
         });
     }

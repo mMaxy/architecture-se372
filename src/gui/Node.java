@@ -42,8 +42,13 @@ public class Node {
         state = State.NORMAL;
     }
 
+    public void setLayer(Layer layer) {
+        this.layer = layer;
+    }
+
     private void loadAnchors() {
         int x = (int)view.x;
+
         int y = (int)view.y;
         this.anchors = new Point[]{
                 new Point(x + 10, y),
