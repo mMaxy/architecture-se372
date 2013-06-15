@@ -55,15 +55,15 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
         double angle = angleBetween(target.getPosition(), control, new Point(0, (int)target.getPosition().getY()));
         this.end = new Polygon(
                 new int[]{
-                        (int)this.getX2(),//target.getPosition().getX(),
+                        (int) (this.getX2() - 10 * Math.abs(Math.cos(angle))),//target.getPosition().getX(),
                         //(int)target.getPosition().getX()
-                        (int) (this.getX2() - 10 * Math.cos(angle) + 3 * Math.sin(angle)),
-                        (int) (this.getX2() - 10 * Math.cos(angle) - 3 * Math.sin(angle))
+                        (int) (this.getX2() - 30 * Math.abs(Math.cos(angle)) + 3 * Math.abs(Math.sin(angle))),
+                        (int) (this.getX2() - 30 * Math.abs(Math.cos(angle)) - 3 * Math.abs(Math.sin(angle)))
                 },
                 new int[]{
-                        (int)this.getY2(),
-                        (int) (this.getY2() - 10 * Math.sin(angle) + 3 * Math.cos(angle)),
-                        (int) (this.getY2() - 10 * Math.sin(angle) - 3 * Math.cos(angle))
+                        (int) (this.getY2() - 10 * Math.abs(Math.sin(angle))),
+                        (int) (this.getY2() - 30 * Math.abs(Math.sin(angle)) + 3 * Math.abs(Math.cos(angle))),
+                        (int) (this.getY2() - 30 * Math.abs(Math.sin(angle)) - 3 * Math.abs(Math.cos(angle)))
                 },
                 3);
     }
