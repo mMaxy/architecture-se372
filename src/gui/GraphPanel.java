@@ -44,11 +44,12 @@ public class GraphPanel extends JPanel{
         Graph.Node vx;
         Layer cl;
 
-        //выдергивание из теминого графа сначала
+        //Gets all the nodes from Grpah graph and distributes them to layers as intended in graphical model.
         for (int i = 0; i < graph.getVertexes().length; i++) {
             vx = graph.getVertexes()[i];
             this.getLayers().get(vx.getLayer()).getNodes().add(new Node(this.getLayers().get(vx.getLayer()), i));
         }
+        //Initialises node attributes, that can be in--sed only after all the nodes in current layer are set
         for( Layer l : this.getLayers())
             for (Node n : l.getNodes()){
                 n.setNodeInLayerID();
@@ -59,6 +60,7 @@ public class GraphPanel extends JPanel{
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D)g;
 
         for( Layer l : this.getLayers()){
             g.setColor(Color.darkGray);
@@ -73,6 +75,8 @@ public class GraphPanel extends JPanel{
                     (int) n.getFigure().getWidth(),
                     (int) n.getFigure().getHeight()
                 );
+                for (Arc a : n.getOutgoingArcs())
+                    g2.draw(a);
             }
         }
     }

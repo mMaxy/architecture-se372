@@ -6,11 +6,10 @@ package gui;
  * Date: 13.06.13
  * Time: 23:34
  */
-import java.awt.*;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Rectangle2D;
+import java.awt.geom.Line2D;
+import java.awt.geom.QuadCurve2D;
 
-public class Arc extends Arc2D.Double {
+public class Arc extends Line2D.Double { //QuadCurve2D.Double {
 
     private Node origin;
     private Node target;
@@ -39,11 +38,11 @@ public class Arc extends Arc2D.Double {
         super(
             origin.getPosition().getX(),
             origin.getPosition().getY(),
-            (int) StrictMath.abs(origin.getPosition().getX() - target.getPosition().getX()),
-            (int) StrictMath.abs(origin.getPosition().getY() - target.getPosition().getY()),
-            0,
-            0,
-            PIE);
+            target.getPosition().getX(),
+            target.getPosition().getY()/*,
+            Math.abs(origin.getPosition().getX() + target.getPosition().getX()) / 2,
+            Math.abs(origin.getPosition().getY() + target.getPosition().getY()) / 2*/
+            );
         this.origin = origin;
         this.target = target;
     }
