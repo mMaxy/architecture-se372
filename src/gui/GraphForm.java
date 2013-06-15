@@ -100,7 +100,6 @@ public class GraphForm extends Component {
         ((GraphPanel) graphPanel).getLayers().clear();
         ((GraphPanel) graphPanel).setGraph(graph);
         graphPanel.repaint();
-        graphPanel.repaint();
     }
 
     private void createUIComponents() {
