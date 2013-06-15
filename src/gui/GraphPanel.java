@@ -45,13 +45,14 @@ public class GraphPanel extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                for(Node n : nodes)
-                    if (n.getView().getBounds().contains(e.getPoint())){
+                for (Node n : nodes)
+                    if (n.getView().getBounds().contains(e.getPoint())) {
                         setCursor(new Cursor(Cursor.MOVE_CURSOR));
                         dragging = true;
                         draggedNode = n;
                         draggedNode.setState(State.DRAGGED);
-                        return;
+                        System.out
+                              .println("Node captured " + n.getNodeID() + " from layer " + n.getLayer().getLayerID());
                     }
             }
 
@@ -65,8 +66,11 @@ public class GraphPanel extends JPanel {
                         l.getNodes().add(draggedNode);
                         dragging = false;
                         setCursor(Cursor.getDefaultCursor());
-                        //frame.repaint();
-                        analyzeGraph();
+                        System.out.println("Node released " + draggedNode.getNodeID() + " to layer " +
+                                           draggedNode.getLayer().getLayerID());
+                        graph.setVertexLayer(draggedNode.getNodeID(), draggedNode.getLayer().getLayerID());
+                        refreshLayers();
+                        frame.pleaseRepaint();
                         return;
                     }
             }
@@ -74,9 +78,10 @@ public class GraphPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (dragging) {
-                Graphics2D g = (Graphics2D)getGraphics();
-                g.setColor(standardColor);
-                g.draw(new Ellipse2D.Double(e.getX() - 10, e.getY() - 10, 20, 20));
+                    Graphics2D g = (Graphics2D) getGraphics();
+                    g.setColor(standardColor);
+                    g.draw(new Ellipse2D.Double(e.getX() - 10, e.getY() - 10, 20, 20));
+                    frame.pleaseRepaint();
                 }
             }
         });
@@ -88,6 +93,8 @@ public class GraphPanel extends JPanel {
 
     public void setGraph(Graph graph) {
         this.graph = graph;
+        nodes.clear();
+        layers.clear();
         for (int i = 0; i <= graph.getLayers(); i++)
             this.getLayers().add(new Layer(this, i));
 
@@ -95,6 +102,33 @@ public class GraphPanel extends JPanel {
         Layer cl;
 
         //Gets all the nodes from Grpah graph and distributes them to layers as intended in graphical model.
+        for (int i = 0; i < graph.getVertexes().length; i++) {
+            vx = graph.getVertexes()[i];
+            Node n = new Node(this.getLayers().get(vx.getLayer()), i);
+            this.nodes.add(n);
+            this.getLayers().get(vx.getLayer()).getNodes().add(n);
+        }
+        //Initialises node attributes, that can be in--sed only after all the nodes in current layer are set
+        for (Layer l : this.getLayers())
+            for (Node n : l.getNodes()) {
+                n.setNodeInLayerID();
+                n.setPosition();
+            }
+        for (Layer l : this.getLayers())
+            for (Node n : l.getNodes()) {
+                n.setIncomingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsedBy());
+                n.setOutgoingArcsByIndexes(graph.getVertexes()[n.getNodeID()].getUsing());
+            }
+    }
+
+    private void refreshLayers() {
+        layers.clear();
+        nodes.clear();
+        for (int i = 0; i <= graph.getLayers(); i++)
+            this.getLayers().add(new Layer(this, i));
+
+        Graph.Node vx;
+
         for (int i = 0; i < graph.getVertexes().length; i++) {
             vx = graph.getVertexes()[i];
             Node n = new Node(this.getLayers().get(vx.getLayer()), i);
@@ -161,8 +195,7 @@ public class GraphPanel extends JPanel {
     }
 
     public void analyzeLoops() {
-        if (graph == null)
-            return;
+        if (graph == null) return;
 
         List<Set<Connection>> loops = graph.findAllLoops();
         for (Set<Connection> loop : loops) {
@@ -207,7 +240,7 @@ public class GraphPanel extends JPanel {
                 g2.setColor(nodeColor);
                 g2.draw(n.getView());
                 g2.drawString(Integer.toString(n.getNodeID()), (int) n.getCenterOf().getX() - 3,
-                        (int) n.getCenterOf().getY() + 5);
+                              (int) n.getCenterOf().getY() + 5);
                 for (Arc a : n.getOutgoingArcs()) {
                     g2.setColor(getColorByState(a.getState()));
                     g2.draw(a);

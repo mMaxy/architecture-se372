@@ -160,6 +160,11 @@ public class GraphForm extends Component {
         graph = new Graph(arr.length);
         graph.setGraphFromMatrix(arr);
 
+        loadGraph(graph);
+    }
+
+    public void loadGraph(Graph graph) {
+
         int[][] matrix = graph.buildAdjacencyMatrix();
         String matrixToText = "";
         for (int[] r : matrix) {
@@ -175,6 +180,10 @@ public class GraphForm extends Component {
         ((GraphPanel) graphPanel).getLayers().clear();
         ((GraphPanel) graphPanel).getNodes().clear();
         ((GraphPanel) graphPanel).setGraph(graph);
+        mainFrame.repaint();
+    }
+
+    public void pleaseRepaint() {
         mainFrame.repaint();
     }
 

@@ -578,6 +578,12 @@ public class Graph {
         return result;
     }
 
+    public void setVertexLayer(int vertexId, int newLayer) {
+        if (vertexId < 0 || vertexId >= vertex.length)
+            return;
+        vertex[vertexId].setLayer(newLayer);
+    }
+
     /**
      * Класс модуля
      */
