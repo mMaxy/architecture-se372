@@ -14,11 +14,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 public class GraphPanel extends JPanel {
+    GraphForm frame;
+
     private List<Layer> layers;
     private Graph graph;
     private List<Node> nodes;
@@ -32,7 +35,8 @@ public class GraphPanel extends JPanel {
         return true;
     }
 
-    public GraphPanel() {
+    public GraphPanel(GraphForm gf) {
+        this.frame = gf;
         this.layers = new ArrayList<Layer>();
         this.nodes = new ArrayList<Node>();
         this.addMouseListener(new MouseAdapter() {
@@ -40,36 +44,40 @@ public class GraphPanel extends JPanel {
             Node draggedNode;
 
             @Override
-            public void mouseClicked(MouseEvent e) {
-                for (Node n : nodes)
-                    if (n.getView().getBounds().contains(e.getPoint())) {
+            public void mousePressed(MouseEvent e) {
+                for(Node n : nodes)
+                    if (n.getView().getBounds().contains(e.getPoint())){
                         setCursor(new Cursor(Cursor.MOVE_CURSOR));
                         dragging = true;
                         draggedNode = n;
                         draggedNode.setState(State.DRAGGED);
                         return;
                     }
-
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 for (Layer l : layers)
-                    if (l.contains(e.getPoint())) {
+                    if (dragging && l.contains(e.getPoint())) {
+                        draggedNode.setState(State.NORMAL);
                         draggedNode.getLayer().getNodes().remove(draggedNode);
                         draggedNode.setLayer(l);
-                        draggedNode.setState(State.NORMAL);
                         l.getNodes().add(draggedNode);
                         dragging = false;
                         setCursor(Cursor.getDefaultCursor());
-                        repaint();
+                        //frame.repaint();
+                        analyzeGraph();
                         return;
                     }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                super.mouseDragged(e);    //To change body of overridden methods use File | Settings | File Templates.
+                if (dragging) {
+                Graphics2D g = (Graphics2D)getGraphics();
+                g.setColor(standardColor);
+                g.draw(new Ellipse2D.Double(e.getX() - 10, e.getY() - 10, 20, 20));
+                }
             }
         });
     }
@@ -199,12 +207,13 @@ public class GraphPanel extends JPanel {
                 g2.setColor(nodeColor);
                 g2.draw(n.getView());
                 g2.drawString(Integer.toString(n.getNodeID()), (int) n.getCenterOf().getX() - 3,
-                              (int) n.getCenterOf().getY() + 5);
+                        (int) n.getCenterOf().getY() + 5);
                 for (Arc a : n.getOutgoingArcs()) {
                     g2.setColor(getColorByState(a.getState()));
                     g2.draw(a);
                     g2.fillPolygon(a.getEnd());
                 }
+                g2.drawString(Integer.toString(n.getNodeID()), (int)n.getCenterOf().getX() - 3, (int)n.getCenterOf().getY() + 5);
             }
         }
     }
