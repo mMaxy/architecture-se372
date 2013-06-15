@@ -75,8 +75,10 @@ public class GraphPanel extends JPanel{
                     (int) n.getFigure().getWidth(),
                     (int) n.getFigure().getHeight()
                 );
-                for (Arc a : n.getOutgoingArcs())
+                for (Arc a : n.getOutgoingArcs()) {
                     g2.draw(a);
+                    g2.fillPolygon(a.getEnd());
+                }
             }
         }
     }
