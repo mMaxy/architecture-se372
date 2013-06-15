@@ -264,9 +264,11 @@ public class Graph {
             graph.get(aCrossHandled).setLayer(1);
         }
         */
-        List<Integer> loop = findFreeLoop2(graph);
-        for (int aLoop : loop) {
-            graph.get(aLoop).setLayer(1);
+        List<List<Integer>> loops = findFreeLoops(graph);
+        for (List<Integer> loop : loops) {
+            for (int index : loop) {
+                graph.get(index).setLayer(1);
+            }
         }
     }
 
@@ -354,8 +356,8 @@ public class Graph {
         return res;
     }
 
-    private List<Integer> findFreeLoop2(List<Node> graph) {
-        List<Integer> result = new ArrayList<Integer>();
+    private List<List<Integer>> findFreeLoops(List<Node> graph) {
+        List<List<Integer>> result = new ArrayList<List<Integer>>();
         List<Set<Connection>> allLoops = findAllLoops();
         for (Set<Connection> loop : allLoops) {
             List<Integer> loopIndexes = new ArrayList<Integer>();
@@ -364,7 +366,7 @@ public class Graph {
                 for (Node node : nodesInLoop) {
                     loopIndexes.add(indexOfPoint(node));
                 }
-                return loopIndexes;
+                result.add(loopIndexes);
             }
         }
         return result;
