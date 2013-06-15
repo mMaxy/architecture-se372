@@ -213,7 +213,6 @@ public class GraphPanel extends JPanel {
                     g2.draw(a);
                     g2.fillPolygon(a.getEnd());
                 }
-                g2.drawString(Integer.toString(n.getNodeID()), (int)n.getCenterOf().getX() - 3, (int)n.getCenterOf().getY() + 5);
             }
         }
     }
