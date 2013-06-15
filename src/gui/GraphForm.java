@@ -81,7 +81,7 @@ public class GraphForm extends Component {
         });
     }
 
-    private void loadGraph(int[][] arr){
+    private void loadGraph(int[][] arr) {
         graph = new Graph(arr.length);
         graph.setGraphFromMatrix(arr);
 
@@ -98,6 +98,7 @@ public class GraphForm extends Component {
         graph.findLayers();
         numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
         ((GraphPanel) graphPanel).getLayers().clear();
+        ((GraphPanel) graphPanel).getNodes().clear();
         ((GraphPanel) graphPanel).setGraph(graph);
         //((GraphPanel) graphPanel).analyzeGraph();
         graphPanel.repaint();

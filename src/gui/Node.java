@@ -82,9 +82,9 @@ public class Node {
     }
 
     public void setOutgoingArcsByIndexes(List<Integer> outgoingArcsNodeIndexes) {
-            for (int i : outgoingArcsNodeIndexes)
-                this.outgoingArcs.add(new Arc(this, this.getLayer().getGraph().getNodes().get(i)));
-        }
+        for (int i : outgoingArcsNodeIndexes)
+            this.outgoingArcs.add(new Arc(this, this.getLayer().getGraph().getNodes().get(i)));
+    }
 
     public Layer getLayer() {
         return this.layer;

@@ -14,6 +14,11 @@ import java.util.List;
 public class Layer  extends Rectangle {
     private List<Node> nodes;
     private GraphPanel graph;
+
+    public int getLayerID() {
+        return layerID;
+    }
+
     private int layerID;
     private Dimension dimension;
     private Point position;
