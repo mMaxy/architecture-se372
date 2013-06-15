@@ -21,16 +21,19 @@ public class Node {
     private Ellipse2D.Double view;
     private Dimension figure = new Dimension(20, 20);
     private Point position;
+    private State state;
 
     public Node(){
         this.incomingArcs = new ArrayList<Arc>();
         this.outgoingArcs = new ArrayList<Arc>();
+        state = State.NORMAL;
     }
 
     public Node(Layer layer, int nodeID) {
         this();
         this.nodeID = nodeID;
         this.layer = layer;
+        state = State.NORMAL;
     }
 
     public int getNodeID() {
@@ -93,6 +96,14 @@ public class Node {
 
     public Point getPosition(){
         return this.position;
+    }
+
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     @Override

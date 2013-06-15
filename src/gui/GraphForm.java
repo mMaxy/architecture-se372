@@ -66,17 +66,17 @@ public class GraphForm extends Component {
         });
         commitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-            String[] pMatrix = matrixTextArea.getText().split("\n");
-            int[][] matrix = new int[pMatrix.length][];
-            String[][] p2Matrix = new String[pMatrix.length][];
+                String[] pMatrix = matrixTextArea.getText().split("\n");
+                int[][] matrix = new int[pMatrix.length][];
+                String[][] p2Matrix = new String[pMatrix.length][];
 
-            for (int i = 0; i < pMatrix.length; i++) {
-                p2Matrix[i] = pMatrix[i].split(" ");
-                matrix[i] = new int[p2Matrix[i].length];
-                for (int j = 0; j < p2Matrix[i].length; j++)
-                    matrix[i][j] = Integer.parseInt(p2Matrix[i][j]);
-            }
-            loadGraph(matrix);
+                for (int i = 0; i < pMatrix.length; i++) {
+                    p2Matrix[i] = pMatrix[i].split(" ");
+                    matrix[i] = new int[p2Matrix[i].length];
+                    for (int j = 0; j < p2Matrix[i].length; j++)
+                        matrix[i][j] = Integer.parseInt(p2Matrix[i][j]);
+                }
+                loadGraph(matrix);
             }
         });
     }
@@ -99,7 +99,7 @@ public class GraphForm extends Component {
         numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
         ((GraphPanel) graphPanel).getLayers().clear();
         ((GraphPanel) graphPanel).setGraph(graph);
-        graphPanel.repaint();
+        //((GraphPanel) graphPanel).analyzeGraph();
         graphPanel.repaint();
     }
 

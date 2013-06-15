@@ -15,6 +15,7 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
     private Node target;
     private Point control;
     private Polygon end;
+    private State state;
 
     public Polygon getEnd() {
         return end;
@@ -36,8 +37,17 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
         this.origin = origin;
     }
 
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State status) {
+        this.state = status;
+    }
+
     public Arc(){
         super();
+        state = State.NORMAL;
     }
 
     public Arc(Node origin, Node target) {
@@ -66,6 +76,7 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
                         (int) (this.getY2() - 30 * Math.abs(Math.sin(angle)) - 3 * Math.abs(Math.cos(angle)))
                 },
                 3);
+        state = State.NORMAL;
     }
 
     private double angleBetween(Point center, Point current, Point previous) {

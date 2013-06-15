@@ -470,8 +470,8 @@ public class Graph {
         List<Connection> result = new ArrayList<Connection>();
         for (Node node : vertex) {
             List<Integer> usingIndexes = node.getUsing();
-            for (Integer i : usingIndexes) {
-                if (vertex[i].getLayer() > node.layer) {
+            for (int i : usingIndexes) {
+                if (vertex[i].getLayer() < node.layer) {
                     result.add(new Connection(indexOfPoint(node), i));
                 }
             }
