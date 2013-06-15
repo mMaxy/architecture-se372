@@ -264,7 +264,7 @@ public class Graph {
             graph.get(aCrossHandled).setLayer(1);
         }
         */
-        List<Integer> loop = findFreeLoop(graph);
+        List<Integer> loop = findFreeLoop2(graph);
         for (int aLoop : loop) {
             graph.get(aLoop).setLayer(1);
         }
@@ -331,7 +331,7 @@ public class Graph {
      */
     private List<Integer> findFreeLoop(List<Node> graph) {
         List<Integer> res = new ArrayList<Integer>();
-        List<Integer> allLoops = findAllLoops();
+        List<Integer> allLoops = findAllLoopsWithMarking();
         for (Node node : graph) {
             boolean innerUsedBy = true;
             boolean innerUsing = true;
@@ -354,14 +354,48 @@ public class Graph {
         return res;
     }
 
-    public List<Integer> findAllLoops() {
+    private List<Integer> findFreeLoop2(List<Node> graph) {
+        List<Integer> result = new ArrayList<Integer>();
+        List<Set<Connection>> allLoops = findAllLoops();
+        for (Set<Connection> loop : allLoops) {
+            List<Integer> loopIndexes = new ArrayList<Integer>();
+            Set<Node> nodesInLoop = getAllNodesInLoop(loop);
+            if (isSubGraphContainsLoop(graph, nodesInLoop)) {
+                for (Node node : nodesInLoop) {
+                    loopIndexes.add(indexOfPoint(node));
+                }
+                return loopIndexes;
+            }
+        }
+        return result;
+    }
+
+    private Set<Node> getAllNodesInLoop(Set<Connection> loop) {
+        Set<Node> nodesInLoop = new HashSet<Node>();
+        for (Connection connection : loop) {
+            nodesInLoop.add(vertex[connection.getFrom()]);
+            nodesInLoop.add(vertex[connection.getTo()]);
+        }
+        return nodesInLoop;
+    }
+
+    private boolean isSubGraphContainsLoop(List<Node> graph, Set<Node> nodesInLoop) {
+        for (Node node : nodesInLoop) {
+            if (!graph.contains(node)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public List<Integer> findAllLoopsWithMarking() {
         List<Integer> result = new ArrayList<Integer>();
         Map<Node, Integer> markMap = new HashMap<Node, Integer>();
         for (Node p : vertex) {
             markMap.put(p, 0);
         }
 
-        markMap = depthFirstSearch(vertex[0], markMap);
+        markMap = depthFirstSearchWithMarking(vertex[0], markMap);
         for (Node p : markMap.keySet()) {
             if (markMap.get(p) == 1)
                 result.add(indexOfPoint(p));
@@ -378,7 +412,7 @@ public class Graph {
         return -1;
     }
 
-    private Map<Node, Integer> depthFirstSearch(Node currentNode, Map<Node, Integer> markMap) {
+    private Map<Node, Integer> depthFirstSearchWithMarking(Node currentNode, Map<Node, Integer> markMap) {
         List<Integer> neighbourIndexes = currentNode.getUsing();
         List<Node> neighbours = new ArrayList<Node>();
         for (Integer i : neighbourIndexes) {
@@ -420,7 +454,7 @@ public class Graph {
                 }
             }
             for (Node p : notMarked) {
-                markMap = depthFirstSearch(p, markMap);
+                markMap = depthFirstSearchWithMarking(p, markMap);
             }
             switch (analyzeNeighbours(neighbours, markMap)) {
                 case 1:
@@ -464,6 +498,53 @@ public class Graph {
         if (containsBlack)
             return 2;
         return -1;
+    }
+
+    public List<Set<Connection>> findAllLoops() {
+        List<Set<Connection>> loops = new ArrayList<Set<Connection>>();
+        for (int i = 0; i < vertex.length; i++) {
+            for (int j = 0; j < vertex.length; j++) {
+                if (i == j) {
+                    continue;
+                }
+                Set<Connection> loop = new HashSet<Connection>();
+                List<Connection> first = depthFirstSearch(vertex[i], vertex[j], new ArrayList<Node>());
+                if (first.isEmpty()) {
+                    continue;
+                }
+                List<Connection> second = depthFirstSearch(vertex[j], vertex[i], new ArrayList<Node>());
+                if (!second.isEmpty()) {
+                    loop.addAll(first);
+                    loop.addAll(second);
+                    loops.add(loop);
+                }
+            }
+        }
+        return loops;
+    }
+
+    private List<Connection> depthFirstSearch(Node from, Node to, List<Node> visited) {
+        List<Connection> result = new ArrayList<Connection>();
+        List<Integer> neighbours = from.getUsing();
+
+        visited.add(from);
+
+        for (int i : neighbours) {
+            Node neighbour = vertex[i];
+            if (neighbour == to) {
+                result.add(new Connection(indexOfPoint(from), i));
+                return result;
+            }
+            if (visited.contains(neighbour)) {
+                continue;
+            }
+            List<Connection> search = depthFirstSearch(neighbour, to, visited);
+            if (!search.isEmpty()) {
+                result.addAll(search);
+                result.add(new Connection(indexOfPoint(from), i));
+            }
+        }
+        return result;
     }
 
     public List<Connection>  findAllConflictBindings() {
