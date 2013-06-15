@@ -13,13 +13,6 @@ public class Graph {
 
     private int layers;
     private Node[] vertex;
-    private Map<Integer, String> dict;
-
-    {
-        dict = new HashMap<Integer, String>();
-        dict.put(1, "public");
-        dict.put(2, "private");
-    }
 
     /**
      * Конструктор
@@ -61,7 +54,6 @@ public class Graph {
                     throw new IllegalArgumentException("В матрице можно использовать только 0 1 и 2");
                 this.vertex[i].addUsing(j);
                 this.vertex[j].addUsedBy(i);
-                this.vertex[i].setAccessModifier(adjacencyMatrix[i][j]);
             }
         }
     }
@@ -73,13 +65,12 @@ public class Graph {
      */
     public void setGraphFromList(int[][] list) throws IllegalArgumentException {
         if (list == null) throw new IllegalArgumentException();
-        if (list[0].length != 3)
-            throw new IllegalArgumentException("список должен состоять из трех элементов. Neither more, nor less");
+        if (list[0].length != 2)
+            throw new IllegalArgumentException("список должен состоять из двух элементов. Neither more, nor less");
         for (int i = 0; i < list.length; i++) {
             if (list[i][2] == 0) continue;
             this.vertex[list[i][0]].addUsing(list[i][1]);
             this.vertex[list[i][1]].addUsedBy(list[i][0]);
-            this.vertex[i].setAccessModifier(list[i][2]);
         }
     }
 
@@ -152,7 +143,7 @@ public class Graph {
         for (int i = 0; i < this.vertex.length; i++) {
             List<Integer> connections = this.vertex[i].getUsing();
             for (Integer connection : connections) {
-                res[i][connection] = this.vertex[connection].getAccessModifier();
+                res[i][connection] = 1;
             }
         }
 
@@ -226,7 +217,7 @@ public class Graph {
         Map<Integer, Integer> mapVerToGraph = new HashMap<Integer, Integer>();
 
         for (int i = 0; i < vertex.length; i++) {
-            if (vertex[i].getLayer() == 0 && vertex[i].getAccessModifier() == 1) {
+            if (vertex[i].getLayer() == 0) {
                 graph.add(new Node());
                 mapGraphToVer.put(graph.size() - 1, i);
                 mapVerToGraph.put(i, graph.size() - 1);
@@ -234,7 +225,6 @@ public class Graph {
         }
         if (graph.size() == 0) return false;
         for (int i = 0; i < graph.size(); i ++) {
-            graph.get(i).setAccessModifier(vertex[mapGraphToVer.get(i)].getAccessModifier());
             List<Integer> usedBy = vertex[mapGraphToVer.get(i)].getUsedBy();
             for (Integer u : usedBy) {
                 if (mapVerToGraph.containsKey(u)) {
@@ -264,7 +254,7 @@ public class Graph {
      */
     private void findL(List<Node> graph) {
         for (Node aVertex : graph) {
-            if (aVertex.getSizeOfUsing() == 0 && aVertex.getAccessModifier() != 2) {
+            if (aVertex.getSizeOfUsing() == 0) {
                 aVertex.setLayer(1);
             }
         }
@@ -502,7 +492,6 @@ public class Graph {
      */
     public class Node {
 
-        private int accessModifier;
         private int layer;
         private List<Integer> using;
         private List<Integer> usedBy;
@@ -510,18 +499,6 @@ public class Graph {
         public Node() {
             this.using = new ArrayList<Integer>();
             this.usedBy = new ArrayList<Integer>();
-        }
-
-        public int getAccessModifier() {
-            return accessModifier;
-        }
-
-        public void setAccessModifier(int accessModifier) {
-            this.accessModifier = accessModifier;
-        }
-
-        public String getStringAccessModifier() {
-            return dict.get(this.accessModifier);
         }
 
         public int getLayer() {
