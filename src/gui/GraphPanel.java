@@ -117,9 +117,6 @@ public class GraphPanel extends JPanel {
                 g.setColor(standardColor);
                 g.fillOval((int) n.getPosition().getX(), (int) n.getPosition().getY(), (int) n.getFigure().getWidth(),
                            (int) n.getFigure().getHeight());
-                g.setColor(Color.white);
-                g2.drawString(Integer.toString(n.getNodeID()), (int)n.getPosition().getX() + 7, (int)n.getPosition().getY() + 15);
-                g.setColor(standardColor);
                 for (Arc a : n.getOutgoingArcs()) {
                     g2.setColor(a.getState() == State.NORMAL
                                         ? standardColor
@@ -129,6 +126,8 @@ public class GraphPanel extends JPanel {
                     );
                     g2.draw(a);
                     g2.fillPolygon(a.getEnd());
+                    g.setColor(Color.white);
+                    g2.drawString(Integer.toString(n.getNodeID()), (int)n.getPosition().getX() + 7, (int)n.getPosition().getY() + 15);
                 }
                 /*for (Arc a : n.getIncomingArcs()) {
                     g2.draw(a);
