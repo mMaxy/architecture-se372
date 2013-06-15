@@ -19,7 +19,7 @@ public class Node {
     private List<Arc> incomingArcs;
     private List<Arc> outgoingArcs;
     private Ellipse2D.Double view;
-    private Dimension figure = new Dimension(5, 5);
+    private Dimension figure = new Dimension(6, 6);
     private Point position;
 
     public Node(){
