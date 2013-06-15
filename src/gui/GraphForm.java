@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Ellipse2D;
 import java.io.FileReader;
 
 public class GraphForm extends Component {
@@ -30,18 +31,17 @@ public class GraphForm extends Component {
     private JButton buttonAnalyze;
     private JButton buttonLoops;
 
-    private boolean dragging = false;
 
     private Graph graph;
     private static JFrame mainFrame;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("GraphForm");
+        mainFrame = frame;
         frame.setContentPane(new GraphForm().wrapperPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
-        mainFrame = frame;
     }
 
     public GraphForm() {
@@ -87,6 +87,7 @@ public class GraphForm extends Component {
                 loadGraph(matrix);
             }
         });
+
         /*graphPanel.addMouseListener(new MouseAdapter() {
             boolean dragging = false;
             Node draggedNode;
@@ -106,21 +107,25 @@ public class GraphForm extends Component {
             @Override
             public void mouseReleased(MouseEvent e) {
                 for (Layer l : ((GraphPanel)graphPanel).getLayers())
-                    if (l.contains(e.getPoint())){
+                    if (dragging && l.contains(e.getPoint())) {
+                        draggedNode.setState(State.NORMAL);
                         draggedNode.getLayer().getNodes().remove(draggedNode);
                         draggedNode.setLayer(l);
-                        draggedNode.setState(State.NORMAL);
                         l.getNodes().add(draggedNode);
                         dragging = false;
                         setCursor(Cursor.getDefaultCursor());
-                        repaint();
+                        ((GraphPanel)graphPanel).analyzeGraph();
                         return;
                     }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                super.mouseDragged(e);    //To change body of overridden methods use File | Settings | File Templates.
+                if (dragging) {
+                Graphics2D g = (Graphics2D)getGraphics();
+                g.setColor(Color.black);
+                g.draw(new Ellipse2D.Double(e.getX() - 10, e.getY() - 10, 20, 20));
+                }
             }
         });*/
 
@@ -146,29 +151,14 @@ public class GraphForm extends Component {
         });
     }
 
-    public void loadGraph(java.util.List<Node> nodesList){
-        int[][] arr = new int[nodesList.size()][];
-        for (Node n : nodesList) {
-            arr[n.getNodeID()] = new int[n.getOutgoingArcs().size()];
-            for (Arc a : n.getOutgoingArcs())
-                arr[n.getNodeID()][a.getTarget().getNodeID()] = 1;
-        }
-        loadGraph(arr);
-    }
 
     public void loadGraph(int[][] arr) {
         graph = new Graph(arr.length);
         graph.setGraphFromMatrix(arr);
 
         int[][] matrix = graph.buildAdjacencyMatrix();
-        String matrixToText = "";
-        for (int[] r : matrix) {
-            for (int c : r)
-                matrixToText += c + " ";
-            matrixToText += "\n";
-        }
 
-        matrixTextArea.setText(matrixToText);
+        this.loadTextTable(matrix);
 
         graph.findLayers();
         numberOfLayersLabel.setText(String.valueOf(graph.getLayers()));
@@ -178,8 +168,29 @@ public class GraphForm extends Component {
         mainFrame.repaint();
     }
 
+    public void loadTextTable(java.util.List<Node> nodesList){
+            int[][] arr = new int[nodesList.size()][];
+            for (Node n : nodesList) {
+                arr[n.getNodeID()] = new int[nodesList.size()];
+                for (Arc a : n.getOutgoingArcs())
+                    arr[n.getNodeID()][a.getTarget().getNodeID()] = 1;
+            }
+            loadTextTable(arr);
+        }
+
+    public void loadTextTable(int[][] matrix){
+        String matrixToText = "";
+            for (int[] r : matrix) {
+                for (int c : r)
+                    matrixToText += c + " ";
+                matrixToText += "\n";
+            }
+
+            matrixTextArea.setText(matrixToText);
+    }
+
     private void createUIComponents() {
-        graphPanel = new GraphPanel(this);
+        graphPanel = new GraphPanel(mainFrame);
         graphPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         graphPanel.setBackground(new Color(-1));
         graphPanel.setMinimumSize(new Dimension(530, 24));

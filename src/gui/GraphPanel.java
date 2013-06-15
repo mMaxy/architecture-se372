@@ -12,6 +12,7 @@ import graph.Graph;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Ellipse2D;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Set;
 
 public class GraphPanel extends JPanel {
-    GraphForm frame;
+    JFrame frame;
 
     private List<Layer> layers;
     private Graph graph;
@@ -35,13 +36,23 @@ public class GraphPanel extends JPanel {
         return true;
     }
 
-    public GraphPanel(GraphForm gf) {
+    public GraphPanel(JFrame gf) {
         this.frame = gf;
         this.layers = new ArrayList<Layer>();
         this.nodes = new ArrayList<Node>();
         this.addMouseListener(new MouseAdapter() {
             boolean dragging = false;
             Node draggedNode;
+
+            /*@Override
+            public void mouseMoved(MouseEvent e) {
+                for(Node n : nodes) {
+                    if (n.getView().getBounds().contains(e.getPoint()))
+                        setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    else
+                        setCursor(Cursor.getDefaultCursor());
+                };
+            }*/
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -65,8 +76,9 @@ public class GraphPanel extends JPanel {
                         l.getNodes().add(draggedNode);
                         dragging = false;
                         setCursor(Cursor.getDefaultCursor());
-                        //frame.repaint();
                         analyzeGraph();
+                        //((GraphForm)frame).loadTextTable(nodes);
+                        frame.repaint();
                         return;
                     }
             }
@@ -74,9 +86,10 @@ public class GraphPanel extends JPanel {
             @Override
             public void mouseDragged(MouseEvent e) {
                 if (dragging) {
-                Graphics2D g = (Graphics2D)getGraphics();
-                g.setColor(standardColor);
-                g.draw(new Ellipse2D.Double(e.getX() - 10, e.getY() - 10, 20, 20));
+                    Graphics2D g = (Graphics2D)getGraphics();
+                    g.setColor(standardColor);
+                    g.draw(new Ellipse2D.Double(e.getX() - 10, e.getY() - 10, 20, 20));
+                    frame.repaint();
                 }
             }
         });
