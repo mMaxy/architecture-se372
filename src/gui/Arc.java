@@ -74,8 +74,6 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
                         this.control.setLocation(this.control.x - 40 , this.control.y);
                 }
 
-
-
         this.setCurve(
         //this.setLine(
                 this.origin.getPosition(),
@@ -86,13 +84,13 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
         this.end = new Polygon(
                 new int[]{
                         (int) (this.getX2() - 10 * Math.cos(angle)),
-                        (int) (this.getX2() - 30 * Math.cos(angle) + 3 * Math.sin(angle)),
-                        (int) (this.getX2() - 30 * Math.cos(angle) - 3 * Math.sin(angle))
+                        (int) (this.getX2() - 35 * Math.cos(angle) + 5 * Math.sin(angle)),
+                        (int) (this.getX2() - 35 * Math.cos(angle) - 5 * Math.sin(angle))
                 },
                 new int[]{
                         (int) (this.getY2() + 10 * Math.sin(angle)),
-                        (int) (this.getY2() + 30 * Math.sin(angle) + 3 * Math.cos(angle)),
-                        (int) (this.getY2() + 30 * Math.sin(angle) - 3 * Math.cos(angle))
+                        (int) (this.getY2() + 35 * Math.sin(angle) + 5 * Math.cos(angle)),
+                        (int) (this.getY2() + 35 * Math.sin(angle) - 5 * Math.cos(angle))
                 },
                 3);
         state = State.NORMAL;
