@@ -258,10 +258,12 @@ public class Graph {
                 aVertex.setLayer(1);
             }
         }
+        /*
         int[] crossHandled = findCrossHandledModules(graph);
         for (int aCrossHandled : crossHandled) {
             graph.get(aCrossHandled).setLayer(1);
         }
+        */
         List<Integer> loop = findFreeLoop(graph);
         for (int aLoop : loop) {
             graph.get(aLoop).setLayer(1);
