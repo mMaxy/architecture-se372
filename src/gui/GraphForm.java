@@ -87,34 +87,47 @@ public class GraphForm extends Component {
                 loadGraph(matrix);
             }
         });
-        graphPanel.addMouseListener(new MouseAdapter() {
+        /*graphPanel.addMouseListener(new MouseAdapter() {
+            boolean dragging = false;
+            Node draggedNode;
+
             @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                for (Node n : ((GraphPanel) graphPanel).getNodes())
-                    if (n.getView().getBounds().contains(e.getPoint())) {
+            public void mousePressed(MouseEvent e) {
+                for(Node n : ((GraphPanel)graphPanel).getNodes())
+                    if (n.getView().getBounds().contains(e.getPoint())){
                         setCursor(new Cursor(Cursor.MOVE_CURSOR));
                         dragging = true;
-
-
+                        draggedNode = n;
+                        draggedNode.setState(State.DRAGGED);
+                        return;
                     }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
-                super.mouseReleased(e);    //To change body of overridden methods use File | Settings | File Templates.
+                for (Layer l : ((GraphPanel)graphPanel).getLayers())
+                    if (l.contains(e.getPoint())){
+                        draggedNode.getLayer().getNodes().remove(draggedNode);
+                        draggedNode.setLayer(l);
+                        draggedNode.setState(State.NORMAL);
+                        l.getNodes().add(draggedNode);
+                        dragging = false;
+                        setCursor(Cursor.getDefaultCursor());
+                        repaint();
+                        return;
+                    }
             }
 
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);    //To change body of overridden methods use File | Settings | File Templates.
             }
-        });
+        });*/
+
         buttonAnalyze.addActionListener(new ActionListener() {
             /**
              * Invoked when an action occurs.
              */
-            @Override
             public void actionPerformed(ActionEvent e) {
                 ((GraphPanel)graphPanel).clearAllStates();
                 ((GraphPanel)graphPanel).analyzeGraph();
@@ -125,7 +138,6 @@ public class GraphForm extends Component {
             /**
              * Invoked when an action occurs.
              */
-            @Override
             public void actionPerformed(ActionEvent e) {
                 ((GraphPanel)graphPanel).clearAllStates();
                 ((GraphPanel)graphPanel).analyzeLoops();
@@ -134,7 +146,17 @@ public class GraphForm extends Component {
         });
     }
 
-    private void loadGraph(int[][] arr) {
+    public void loadGraph(java.util.List<Node> nodesList){
+        int[][] arr = new int[nodesList.size()][];
+        for (Node n : nodesList) {
+            arr[n.getNodeID()] = new int[n.getOutgoingArcs().size()];
+            for (Arc a : n.getOutgoingArcs())
+                arr[n.getNodeID()][a.getTarget().getNodeID()] = 1;
+        }
+        loadGraph(arr);
+    }
+
+    public void loadGraph(int[][] arr) {
         graph = new Graph(arr.length);
         graph.setGraphFromMatrix(arr);
 
@@ -157,7 +179,7 @@ public class GraphForm extends Component {
     }
 
     private void createUIComponents() {
-        graphPanel = new GraphPanel();
+        graphPanel = new GraphPanel(this);
         graphPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         graphPanel.setBackground(new Color(-1));
         graphPanel.setMinimumSize(new Dimension(530, 24));
