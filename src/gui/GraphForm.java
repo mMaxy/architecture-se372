@@ -27,10 +27,13 @@ public class GraphForm extends Component {
     private JButton loadButton;
     private JTextArea matrixTextArea;
     private JButton commitButton;
+    private JButton buttonAnalyze;
+    private JButton buttonLoops;
 
     private boolean dragging = false;
 
     private Graph graph;
+    private static JFrame mainFrame;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("GraphForm");
@@ -38,6 +41,7 @@ public class GraphForm extends Component {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
         frame.setVisible(true);
+        mainFrame = frame;
     }
 
     public GraphForm() {
@@ -81,16 +85,14 @@ public class GraphForm extends Component {
                         matrix[i][j] = Integer.parseInt(p2Matrix[i][j]);
                 }
                 loadGraph(matrix);
-                ((GraphPanel)graphPanel).analyzeGraph();
-                graphPanel.repaint();
             }
         });
         graphPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                for(Node n : ((GraphPanel)graphPanel).getNodes())
-                    if (n.getView().getBounds().contains(e.getPoint())){
+                for (Node n : ((GraphPanel) graphPanel).getNodes())
+                    if (n.getView().getBounds().contains(e.getPoint())) {
                         setCursor(new Cursor(Cursor.MOVE_CURSOR));
                         dragging = true;
 
@@ -106,6 +108,28 @@ public class GraphForm extends Component {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);    //To change body of overridden methods use File | Settings | File Templates.
+            }
+        });
+        buttonAnalyze.addActionListener(new ActionListener() {
+            /**
+             * Invoked when an action occurs.
+             */
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((GraphPanel)graphPanel).clearAllStates();
+                ((GraphPanel)graphPanel).analyzeGraph();
+                mainFrame.repaint();
+            }
+        });
+        buttonLoops.addActionListener(new ActionListener() {
+            /**
+             * Invoked when an action occurs.
+             */
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ((GraphPanel)graphPanel).clearAllStates();
+                ((GraphPanel)graphPanel).analyzeLoops();
+                mainFrame.repaint();
             }
         });
     }
@@ -129,7 +153,7 @@ public class GraphForm extends Component {
         ((GraphPanel) graphPanel).getLayers().clear();
         ((GraphPanel) graphPanel).getNodes().clear();
         ((GraphPanel) graphPanel).setGraph(graph);
-        graphPanel.repaint();
+        mainFrame.repaint();
     }
 
     private void createUIComponents() {

@@ -16,6 +16,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class GraphPanel extends JPanel {
     private List<Layer> layers;
@@ -143,6 +144,37 @@ public class GraphPanel extends JPanel {
             }
         }
         return null;
+    }
+
+    public void analyzeLoops() {
+        if (graph == null)
+            return;
+
+        List<Set<Connection>> loops = graph.findAllLoops();
+        for (Set<Connection> loop : loops) {
+            for (Connection connection : loop) {
+                Arc arc = findArc(connection);
+                if (arc == null) {
+                    continue;
+                }
+                arc.setState(State.IN_CYCLE);
+                arc.getOrigin().setState(State.IN_CYCLE);
+                arc.getTarget().setState(State.IN_CYCLE);
+            }
+        }
+    }
+
+    public void clearAllStates() {
+        List<Node> nodes = getNodes();
+        for (Node node : nodes) {
+            node.setState(State.NORMAL);
+            for (Arc arc : node.getIncomingArcs()) {
+                arc.setState(State.NORMAL);
+            }
+            for (Arc arc : node.getOutgoingArcs()) {
+                arc.setState(State.NORMAL);
+            }
+        }
     }
 
     @Override
