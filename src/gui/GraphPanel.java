@@ -38,7 +38,7 @@ public class GraphPanel extends JPanel{
 
     public void setGraph(Graph graph){
         this.graph = graph;
-        for (int i = 1; i <= graph.getLayers() + 2; i++)
+        for (int i = 0; i <= graph.getLayers(); i++)
             this.getLayers().add(new Layer(this, i));
 
         Graph.Node vx;

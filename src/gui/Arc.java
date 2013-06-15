@@ -7,7 +7,6 @@ package gui;
  * Time: 23:34
  */
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.awt.geom.QuadCurve2D;
 
 public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
@@ -70,7 +69,7 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
     }
 
     private double angleBetween(Point center, Point current, Point previous) {
-
-      return Math.toDegrees(Math.atan2(current.x - center.x,current.y - center.y) - Math.atan2(previous.x - center.x, previous.y - center.y));
+      return Math.toDegrees(Math.atan2(current.x - center.x,current.y - center.y) -
+                            Math.atan2(previous.x - center.x, previous.y - center.y));
     }
 }
