@@ -242,7 +242,7 @@ public class Graph {
 
         for (int i = 0; i < graph.size(); i++) {
             if (graph.get(i).getLayer() != 0) {
-                vertex[mapGraphToVer.get(i)].setLayer(i + 1);
+                vertex[mapGraphToVer.get(i)].setLayer(currentLayer + 1);
             }
         }
         return true;
