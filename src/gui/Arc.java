@@ -10,17 +10,12 @@ import java.awt.*;
 import java.awt.geom.QuadCurve2D;
 
 public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
-    public enum Status {
-        NORMAL,
-        IN_CYCLE,
-        INCORRECT
-    }
 
     private Node origin;
     private Node target;
     private Point control;
     private Polygon end;
-    private Status status;
+    private State state;
 
     public Polygon getEnd() {
         return end;
@@ -42,17 +37,17 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
         this.origin = origin;
     }
 
-    public Status getStatus() {
-        return status;
+    public State getState() {
+        return state;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setState(State status) {
+        this.state = status;
     }
 
     public Arc(){
         super();
-        status = Status.NORMAL;
+        state = State.NORMAL;
     }
 
     public Arc(Node origin, Node target) {
@@ -81,7 +76,7 @@ public class Arc extends /*Line2D.Double {*/ QuadCurve2D.Double {
                         (int) (this.getY2() - 30 * Math.abs(Math.sin(angle)) - 3 * Math.abs(Math.cos(angle)))
                 },
                 3);
-        status = Status.NORMAL;
+        state = State.NORMAL;
     }
 
     private double angleBetween(Point center, Point current, Point previous) {

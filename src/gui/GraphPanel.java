@@ -70,7 +70,14 @@ public class GraphPanel extends JPanel {
         for (Connection c : connections) {
             Arc arc = findArc(c);
             if (arc != null)
-                arc.setStatus(Arc.Status.INCORRECT);
+                arc.setState(State.INCORRECT);
+        }
+
+        // analyzing self loops
+        List<Integer> nodeIndexes = graph.findAllSelfLoops();
+        List<Node> nodes = getNodes();
+        for (int index : nodeIndexes) {
+            nodes.get(index).setState(State.INCORRECT);
         }
     }
 
@@ -109,9 +116,9 @@ public class GraphPanel extends JPanel {
                 g.fillOval((int) n.getPosition().getX(), (int) n.getPosition().getY(), (int) n.getFigure().getWidth(),
                            (int) n.getFigure().getHeight());
                 for (Arc a : n.getOutgoingArcs()) {
-                    g2.setColor(a.getStatus() == Arc.Status.NORMAL
+                    g2.setColor(a.getState() == State.NORMAL
                                         ? standardColor
-                                        : a.getStatus() == Arc.Status.IN_CYCLE
+                                        : a.getState() == State.IN_CYCLE
                                                 ? cycleColor
                                                 : errorColor
                     );
