@@ -258,6 +258,12 @@ public class Graph {
                 aVertex.setLayer(1);
             }
         }
+
+        List<Integer> selfLoops = findAllSelfLoops();
+        for (int nodeIndex : selfLoops) {
+            if (vertex[nodeIndex].getSizeOfUsing() == 1)
+                vertex[nodeIndex].setLayer(1);
+        }
         /*
         int[] crossHandled = findCrossHandledModules(graph);
         for (int aCrossHandled : crossHandled) {

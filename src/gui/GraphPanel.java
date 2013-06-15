@@ -120,6 +120,11 @@ public class GraphPanel extends JPanel {
         List<Node> nodes = getNodes();
         for (int index : nodeIndexes) {
             nodes.get(index).setState(State.INCORRECT);
+            for (Arc arc : nodes.get(index).getOutgoingArcs()) {
+                if (arc.getTarget() == nodes.get(index)) {
+                    arc.setState(State.INCORRECT);
+                }
+            }
         }
     }
 
