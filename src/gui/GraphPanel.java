@@ -26,6 +26,7 @@ public class GraphPanel extends JPanel {
     private final Color standardColor = Color.BLACK;
     private final Color cycleColor = Color.GREEN;
     private final Color errorColor = Color.RED;
+    private final Color draggedColor = Color.LIGHT_GRAY;
 
     public boolean equals(Object o) {
         return true;
@@ -194,27 +195,32 @@ public class GraphPanel extends JPanel {
             g2.drawString("Layer " + l.getLayerID(), (float) l.getX() + 5, (float) l.getY() + 15);
 
             for (Node n : l.getNodes()) {
-                Color nodeColor = n.getState() == State.NORMAL
-                        ? standardColor
-                        : n.getState() == State.IN_CYCLE
-                                ? cycleColor
-                                : n.getState() == State.INCORRECT
-                                        ? errorColor
-                                        : Color.darkGray;
+                Color nodeColor = getColorByState(n.getState());
                 g2.setColor(nodeColor);
                 g2.draw(n.getView());
                 g2.drawString(Integer.toString(n.getNodeID()), (int) n.getCenterOf().getX() - 3,
                               (int) n.getCenterOf().getY() + 5);
                 for (Arc a : n.getOutgoingArcs()) {
-                    g2.setColor(a.getState() == State.NORMAL
-                                        ? standardColor
-                                        : a.getState() == State.IN_CYCLE
-                                                ? cycleColor
-                                                : errorColor);
+                    g2.setColor(getColorByState(a.getState()));
                     g2.draw(a);
                     g2.fillPolygon(a.getEnd());
                 }
             }
+        }
+    }
+
+    private Color getColorByState(State state) {
+        switch (state) {
+            case NORMAL:
+                return standardColor;
+            case IN_CYCLE:
+                return cycleColor;
+            case INCORRECT:
+                return errorColor;
+            case DRAGGED:
+                return draggedColor;
+            default:
+                return standardColor;
         }
     }
 
