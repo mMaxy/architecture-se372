@@ -51,33 +51,32 @@ public class GraphPanel extends JPanel {
                         dragging = true;
                         draggedNode = n;
                         draggedNode.setState(State.DRAGGED);
-                        System.out
-                              .println("Node captured " + n.getNodeID() + " from layer " + n.getLayer().getLayerID());
-                        return;
+                        frame.pleaseRepaint();
+                        System.out.println("Node captured " + n.getNodeID() + " from layer " + n.getLayer().getLayerID());
+                        return; 
+                       
                     }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 for (Layer l : layers)
-                    if (dragging && l.getBounds().contains(e.getPoint())) {
-                        draggedNode.setState(State.NORMAL);
+                    if (dragging && l.contains(e.getPoint())) {
                         draggedNode.getLayer().getNodes().remove(draggedNode);
                         draggedNode.setLayer(l);
                         l.getNodes().add(draggedNode);
-                        dragging = false;
-                        setCursor(Cursor.getDefaultCursor());
                         System.out.println("Node released " + draggedNode.getNodeID() + " to layer " +
                                            draggedNode.getLayer().getLayerID());
                         graph.setVertexLayer(draggedNode.getNodeID(), draggedNode.getLayer().getLayerID());
                         refreshLayers();
                         frame.pleaseRepaint();
-                        return;
+                        //return;
                     }
-                dragging = false;
                 draggedNode.setState(State.NORMAL);
+                dragging = false;
                 setCursor(Cursor.getDefaultCursor());
-                System.out.println("Node released " + draggedNode.getNodeID() + " outside layers");
+                System.out.println("Node released " + draggedNode.getNodeID() + " to nowhere, dragging aborted");
+                frame.pleaseRepaint();
             }
 
             @Override
