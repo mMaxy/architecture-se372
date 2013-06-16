@@ -53,13 +53,14 @@ public class GraphPanel extends JPanel {
                         draggedNode.setState(State.DRAGGED);
                         System.out
                               .println("Node captured " + n.getNodeID() + " from layer " + n.getLayer().getLayerID());
+                        return;
                     }
             }
 
             @Override
             public void mouseReleased(MouseEvent e) {
                 for (Layer l : layers)
-                    if (dragging && l.contains(e.getPoint())) {
+                    if (dragging && l.getBounds().contains(e.getPoint())) {
                         draggedNode.setState(State.NORMAL);
                         draggedNode.getLayer().getNodes().remove(draggedNode);
                         draggedNode.setLayer(l);
@@ -73,6 +74,10 @@ public class GraphPanel extends JPanel {
                         frame.pleaseRepaint();
                         return;
                     }
+                dragging = false;
+                draggedNode.setState(State.NORMAL);
+                setCursor(Cursor.getDefaultCursor());
+                System.out.println("Node released " + draggedNode.getNodeID() + " outside layers");
             }
 
             @Override
