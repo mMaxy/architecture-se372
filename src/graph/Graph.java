@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+import static java.util.Collections.*;
+
 /**
  * Created with IntelliJ IDEA.
  * User: mmaxy
@@ -196,7 +198,7 @@ public class Graph {
         for (Node v : this.vertex) {
             vert.add(v.getCopy());
         }
-        Collections.addAll(ololo, this.vertex);
+        addAll(ololo, this.vertex);
         List<List<Integer>> loops = findFreeLoops(ololo);
         List<List<Integer>> trueLoops = new ArrayList<List<Integer>>();
         List<Integer> res = new ArrayList<Integer>();
