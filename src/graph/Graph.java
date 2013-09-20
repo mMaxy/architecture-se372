@@ -160,7 +160,6 @@ public class Graph {
 
     /**
      * Вернуть массив вершин
-     * @return массив вершин
      */
     public void setVertexes(Node[] newVertex) {
         this.vertex = newVertex;
@@ -193,12 +192,113 @@ public class Graph {
      */
     public void findLayers() {
         List<Node> vert = new ArrayList<Node>();
-
-        Collections.addAll(vert, this.vertex);
+        List<Node> ololo = new ArrayList<Node>();
+        for (Node v : this.vertex) {
+            vert.add(v.getCopy());
+        }
+        Collections.addAll(ololo, this.vertex);
+        List<List<Integer>> loops = findFreeLoops(ololo);
+        List<List<Integer>> trueLoops = new ArrayList<List<Integer>>();
+        List<Integer> res = new ArrayList<Integer>();
+        for (List<Integer> loop : loops) {
+            for (List<Integer> check : loops) {
+                if (loop == check) {
+                    continue;
+                }
+                if (loop.containsAll(check)) {
+                    boolean flag = true;
+                    for (int tmp : res) {
+                        if (loops.get(tmp).containsAll(loop)) {
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag){
+                        if (res.contains(loops.indexOf(check)))
+                            res.remove(res.indexOf(loops.indexOf(check)));
+                        if (!res.contains(loops.indexOf(loop))) res.add(loops.indexOf(loop));
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < loops.size(); i++) {
+            if (res.contains(i)) {
+                trueLoops.add(loops.get(i));
+            }
+        }
+        loops = trueLoops;
+        Node[] replace = new Node[loops.size()];
+        int i = 0;
+        for (List<Integer> loop : loops) {
+            replace[i] = vert.get(loop.get(0)).getCopy();
+            Node v = new Node();
+            for (int index : loop) {
+                vert.get(index).setLooped(true);
+                List<Integer> using = vert.get(index).getUsing();
+                List<Integer> used = vert.get(index).getUsedBy();
+                for (int use : using) {
+                    if (loop.indexOf(use) == -1) {
+                        if (!v.getUsing().contains(use)) v.addUsing(use);
+                        if (vert.get(use).getUsedBy().contains(loop.get(0)))
+                            vert.get(use).getUsedBy().remove(vert.get(use).getUsedBy().indexOf(loop.get(0)));
+                        else
+                            vert.get(use).getUsedBy().set(vert.get(use).getUsedBy().indexOf(index), loop.get(0));
+                    }
+                }
+                for (int use : used) {
+                    if (loop.indexOf(use) == -1) {
+                        if (!v.getUsedBy().contains(use)) v.addUsedBy(use);
+                        if (vert.get(use).getUsing().contains(loop.get(0)))
+                            vert.get(use).getUsing().remove(vert.get(use).getUsing().indexOf(loop.get(0)));
+                        else
+                            vert.get(use).getUsing().set(vert.get(use).getUsing().indexOf(index), loop.get(0));
+                    }
+                }
+            }
+            vert.set(loops.get(i).get(0), v);
+            i++;
+        }
 
         findL(vert);
-        int i = 1;
-        while (searchNextLayer(i)) i++;
+        for (i = 0; i < vert.size(); i++) {
+            if (vert.get(i).getLayer() != 0) {
+                vert.get(i).setLayer(1);
+            }
+        }
+        i = 1;
+        Node[] tmp = new Node[vert.size()];
+        tmp = vert.toArray(tmp);
+        while (searchNextLayer(i, tmp)) {
+            i++;
+        }
+        int o = 0;
+        for (List<Integer> loop : loops) {
+            replace[o].setLayer(tmp[loop.get(0)].getLayer());
+            for (int index : loop) {
+                if (index == loop.get(0)) {
+                    List<Integer> using = tmp[loop.get(0)].getUsing();
+                    List<Integer> used = tmp[loop.get(0)].getUsedBy();
+                    for (int use : using) {
+                        if (tmp[use].getUsedBy().contains(index)) tmp[use].getUsedBy().remove(tmp[use].getUsedBy().indexOf(index));
+                    }
+                    for (int use : used) {
+                        if (tmp[use].getUsing().contains(index)) tmp[use].getUsing().remove(tmp[use].getUsing().indexOf(index));
+                    }
+                    tmp[index] = replace[o];
+                }
+                List<Integer> using = tmp[index].getUsing();
+                List<Integer> used = tmp[index].getUsedBy();
+                for (int use : using) {
+                    if (!tmp[use].getUsedBy().contains(index)) tmp[use].getUsedBy().add(index);
+                }
+                for (int use : used) {
+                    if (!tmp[use].getUsing().contains(index)) tmp[use].getUsing().add(index);
+                }
+                tmp[index].setLayer(replace[o].getLayer());
+            }
+            o++;
+        }
+        this.vertex = tmp;
         this.layers = i;
     }
 
@@ -211,13 +311,13 @@ public class Graph {
      * @param currentLayer сколько уже слоев проставили
      * @return истина, если были вершины для распределения. Ложь, если не было.
      */
-    private boolean searchNextLayer(int currentLayer) {
+    private boolean searchNextLayer(int currentLayer, Node[] vertex) {
         List<Node> graph = new ArrayList<Node>();
         Map<Integer, Integer> mapGraphToVer = new HashMap<Integer, Integer>();
         Map<Integer, Integer> mapVerToGraph = new HashMap<Integer, Integer>();
 
         for (int i = 0; i < vertex.length; i++) {
-            if (vertex[i].getLayer() == 0) {
+            if (vertex[i].getLayer() == 0 && !vertex[i].checkLoop()) {
                 graph.add(new Node());
                 mapGraphToVer.put(graph.size() - 1, i);
                 mapVerToGraph.put(i, graph.size() - 1);
@@ -225,23 +325,25 @@ public class Graph {
         }
         if (graph.size() == 0) return false;
         for (int i = 0; i < graph.size(); i ++) {
-            List<Integer> usedBy = vertex[mapGraphToVer.get(i)].getUsedBy();
-            for (Integer u : usedBy) {
-                if (mapVerToGraph.containsKey(u)) {
-                    graph.get(i).addUsedBy(mapVerToGraph.get(u));
+            //if (!vertex[i].checkLoop()) {
+                List<Integer> usedBy = vertex[mapGraphToVer.get(i)].getUsedBy();
+                for (Integer u : usedBy) {
+                    if (mapVerToGraph.containsKey(u)) {
+                        graph.get(i).addUsedBy(mapVerToGraph.get(u));
+                    }
+                }
+                List<Integer> using = vertex[mapGraphToVer.get(i)].getUsing();
+                for (Integer u : using) {
+                    if (mapVerToGraph.containsKey(u)) {
+                        graph.get(i).addUsing(mapVerToGraph.get(u));
+                    }
                 }
             }
-            List<Integer> using = vertex[mapGraphToVer.get(i)].getUsing();
-            for (Integer u : using) {
-                if (mapVerToGraph.containsKey(u)) {
-                    graph.get(i).addUsing(mapVerToGraph.get(u));
-                }
-            }
-        }
+        //}
         findL(graph);
 
         for (int i = 0; i < graph.size(); i++) {
-            if (graph.get(i).getLayer() != 0) {
+            if (graph.get(i).getLayer() != 0 && !graph.get(i).checkLoop() ) {
                 vertex[mapGraphToVer.get(i)].setLayer(currentLayer + 1);
             }
         }
@@ -254,27 +356,15 @@ public class Graph {
      */
     private void findL(List<Node> graph) {
         for (Node aVertex : graph) {
-            if (aVertex.getSizeOfUsing() == 0) {
+            if (aVertex.getSizeOfUsing() == 0 && !aVertex.checkLoop()) {
                 aVertex.setLayer(1);
             }
         }
 
         List<Integer> selfLoops = findAllSelfLoops();
         for (int nodeIndex : selfLoops) {
-            if (vertex[nodeIndex].getSizeOfUsing() == 1)
+            if (vertex[nodeIndex].getSizeOfUsing() == 1 && !vertex[nodeIndex].checkLoop())
                 vertex[nodeIndex].setLayer(1);
-        }
-        /*
-        int[] crossHandled = findCrossHandledModules(graph);
-        for (int aCrossHandled : crossHandled) {
-            graph.get(aCrossHandled).setLayer(1);
-        }
-        */
-        List<List<Integer>> loops = findFreeLoops(graph);
-        for (List<Integer> loop : loops) {
-            for (int index : loop) {
-                graph.get(index).setLayer(1);
-            }
         }
     }
 
@@ -590,6 +680,7 @@ public class Graph {
     public class Node {
 
         private int layer;
+        private boolean isLoop = false;
         private List<Integer> using;
         private List<Integer> usedBy;
 
@@ -636,6 +727,27 @@ public class Graph {
 
         public int getSizeOfUsedBy() {
             return this.usedBy.size();
+        }
+
+        public boolean checkLoop() {
+            return this.isLoop;
+        }
+
+        public void setLooped(boolean newValue) {
+            this.isLoop = newValue;
+        }
+
+        public Node getCopy() {
+            Node res = new Node();
+            res.setLayer(this.layer);
+            res.setLooped(this.isLoop);
+            for (Integer use : using) {
+                res.addUsing(use);
+            }
+            for (Integer used : usedBy) {
+                res.addUsedBy(used);
+            }
+            return res;
         }
     }
 
